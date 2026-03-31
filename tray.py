@@ -16,13 +16,9 @@ from game_monitor import GameMonitor
 
 
 def create_tray_icon():
-    """Create a simple tray icon image."""
-    img = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(img)
-    # Purple circle with "A" for Anomaly
-    draw.ellipse([4, 4, 60, 60], fill="#7c3aed")
-    draw.text((20, 15), "A", fill="white")
-    return img
+    """Create the tray icon image."""
+    from icon import create_icon
+    return create_icon(64)
 
 
 class TrayApp:

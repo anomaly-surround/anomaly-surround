@@ -62,6 +62,13 @@ class SurroundApp:
         self.hotkey_manager = HotkeyManager()
         self.detected_headphone = detect_headphone(get_audio_devices())
 
+        # Set window icon
+        try:
+            from icon import get_ico_path
+            self.root.iconbitmap(get_ico_path())
+        except Exception:
+            pass
+
         self.style = ttk.Style()
         self.style.theme_use("clam")
         self._configure_styles()
@@ -1183,12 +1190,8 @@ class SurroundApp:
             self._show_tray_icon()
 
     def _create_tray_image(self):
-        from PIL import Image, ImageDraw
-        img = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
-        draw = ImageDraw.Draw(img)
-        draw.rounded_rectangle([4, 4, 60, 60], radius=12, fill="#7c3aed")
-        draw.text((18, 12), "A", fill="white")
-        return img
+        from icon import create_icon
+        return create_icon(64)
 
     def _show_tray_icon(self):
         if self._tray_icon is not None:
