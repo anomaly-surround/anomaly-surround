@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anomaly Surround - 7.1 Virtual Surround Sound</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #050810;
+            --bg-card: #0d1117;
+            --bg-card2: #111827;
+            --accent: #7c3aed;
+            --accent2: #a78bfa;
+            --accent-glow: rgba(124, 58, 237, 0.3);
+            --blue: #60a5fa;
+            --green: #34d399;
+            --red: #ef4444;
+            --yellow: #f59e0b;
+            --text: #e2e8f0;
+            --text-dim: #64748b;
+            --text-mid: #94a3b8;
+            --border: #1e293b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(5, 8, 16, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(124, 58, 237, 0.1);
+        }
+
+        .nav-logo {
+            font-size: 1.4em;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent2), var(--blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-mid);
+            text-decoration: none;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--accent2); }
+
+        .nav-cta {
+            background: var(--accent);
+            color: white !important;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600 !important;
+            transition: transform 0.2s, box-shadow 0.2s !important;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 20px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            background: rgba(124, 58, 237, 0.15);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 20px;
+            font-size: 0.85em;
+            color: var(--accent2);
+            font-weight: 500;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5em, 6vw, 4.5em);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            max-width: 800px;
+        }
+
+        .hero h1 .gradient {
+            background: linear-gradient(135deg, var(--accent2), var(--blue), var(--green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2em;
+            color: var(--text-mid);
+            max-width: 600px;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 36px;
+            background: linear-gradient(135deg, var(--accent), #6366f1);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.05em;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px var(--accent-glow);
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 36px;
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 1.05em;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            background: rgba(124, 58, 237, 0.05);
+        }
+
+        /* App Preview */
+        .hero-preview {
+            margin-top: 60px;
+            max-width: 900px;
+            width: 100%;
+            position: relative;
+        }
+
+        .preview-window {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 80px rgba(0, 0, 0, 0.5), 0 0 60px var(--accent-glow);
+        }
+
+        .preview-titlebar {
+            background: #0f1623;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .preview-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .preview-body {
+            padding: 30px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .preview-eq {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .preview-eq-title {
+            font-size: 0.85em;
+            color: var(--accent2);
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .eq-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            height: 120px;
+        }
+
+        .eq-bar {
+            flex: 1;
+            border-radius: 4px 4px 0 0;
+            min-width: 20px;
+            transition: height 1s ease;
+            animation: eq-anim 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes eq-anim {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .preview-surround {
+            flex: 1;
+            min-width: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .surround-visual {
+            position: relative;
+            width: 180px;
+            height: 180px;
+        }
+
+        .surround-ring {
+            position: absolute;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            opacity: 0.3;
+        }
+
+        .surround-ring.r1 { inset: 0; animation: ring-pulse 3s ease-in-out infinite; }
+        .surround-ring.r2 { inset: 20px; animation: ring-pulse 3s ease-in-out infinite 0.5s; }
+        .surround-ring.r3 { inset: 40px; animation: ring-pulse 3s ease-in-out infinite 1s; }
+
+        @keyframes ring-pulse {
+            0%, 100% { opacity: 0.15; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.02); }
+        }
+
+        .surround-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .speaker-dot {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--green);
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
+        }
+
+        .speaker-dot.fl { top: 15%; left: 25%; }
+        .speaker-dot.fr { top: 15%; right: 25%; }
+        .speaker-dot.c  { top: 10%; left: 50%; transform: translateX(-50%); }
+        .speaker-dot.sl { top: 50%; left: 5%; }
+        .speaker-dot.sr { top: 50%; right: 5%; }
+        .speaker-dot.rl { bottom: 15%; left: 20%; }
+        .speaker-dot.rr { bottom: 15%; right: 20%; }
+        .speaker-dot.lfe { bottom: 5%; left: 50%; transform: translateX(-50%); background: var(--yellow); box-shadow: 0 0 8px rgba(245, 158, 11, 0.5); }
+
+        /* Stats Bar */
+        .stats-bar {
+            padding: 60px 20px;
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent2), var(--blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: var(--text-dim);
+            margin-top: 4px;
+        }
+
+        /* Features Section */
+        .section {
+            padding: 100px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+            font-size: 2.5em;
+            font-weight: 800;
+            margin-bottom: 16px;
+        }
+
+        .section-header p {
+            color: var(--text-mid);
+            font-size: 1.1em;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 24px;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 36px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--blue));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: rgba(124, 58, 237, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-card:hover::before { opacity: 1; }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6em;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .feature-card p {
+            color: var(--text-mid);
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+
+        /* Comparison Section */
+        .comparison {
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .comparison table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison th {
+            padding: 20px 24px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .comparison th:nth-child(2) {
+            color: var(--text-dim);
+        }
+
+        .comparison th:nth-child(3) {
+            color: var(--accent2);
+        }
+
+        .comparison td {
+            padding: 16px 24px;
+            border-bottom: 1px solid rgba(30, 41, 59, 0.5);
+            font-size: 0.95em;
+        }
+
+        .comparison tr:last-child td { border-bottom: none; }
+
+        .comparison td:first-child {
+            color: var(--text-mid);
+            font-weight: 500;
+        }
+
+        .check { color: var(--green); font-weight: 700; }
+        .cross { color: #4b5563; }
+        .partial { color: var(--yellow); }
+
+        /* How It Works */
+        .steps {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .step {
+            flex: 1;
+            min-width: 220px;
+            max-width: 300px;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #6366f1);
+            color: white;
+            font-size: 1.3em;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .step h3 {
+            font-size: 1.1em;
+            margin-bottom: 8px;
+        }
+
+        .step p {
+            color: var(--text-mid);
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            text-align: center;
+            padding: 100px 20px;
+            position: relative;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 400px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5em;
+            font-weight: 800;
+            margin-bottom: 16px;
+        }
+
+        .cta-section p {
+            color: var(--text-mid);
+            font-size: 1.1em;
+            margin-bottom: 36px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.85em;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav { padding: 12px 20px; }
+            .nav-links { display: none; }
+            .stats-bar { gap: 30px; }
+            .features-grid { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 2.2em; }
+            .preview-body { flex-direction: column; }
+        }
+
+        /* Install Guide */
+        .guide-section {
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        .guide-block {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 36px;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .guide-block h3 {
+            font-size: 1.2em;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .guide-step-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #6366f1);
+            color: white;
+            font-size: 0.85em;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .guide-block p, .guide-block li {
+            color: var(--text-mid);
+            line-height: 1.7;
+            font-size: 0.95em;
+        }
+
+        .guide-block ol, .guide-block ul {
+            margin: 12px 0;
+            padding-left: 20px;
+        }
+
+        .guide-block li {
+            margin-bottom: 8px;
+        }
+
+        .guide-block a {
+            color: var(--accent2);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .guide-block a:hover {
+            text-decoration: underline;
+        }
+
+        .code-block {
+            background: #0b0f1a;
+            border: 1px solid #1a2035;
+            border-radius: 10px;
+            padding: 16px 20px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #c4cad6;
+            margin: 12px 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block .comment { color: #4b6a8f; }
+        .code-block .command { color: var(--green); }
+        .code-block .flag { color: var(--accent2); }
+
+        .guide-note {
+            background: rgba(245, 158, 11, 0.08);
+            border-left: 3px solid var(--yellow);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            margin: 16px 0;
+            font-size: 0.9em;
+            color: var(--yellow);
+        }
+
+        .guide-tip {
+            background: rgba(52, 211, 153, 0.08);
+            border-left: 3px solid var(--green);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            margin: 16px 0;
+            font-size: 0.9em;
+            color: var(--green);
+        }
+
+        .usage-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .usage-card {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(30, 41, 59, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .usage-card h4 {
+            font-size: 1em;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .usage-card p {
+            font-size: 0.85em;
+            line-height: 1.6;
+        }
+
+        .cli-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+        }
+
+        .cli-table th {
+            text-align: left;
+            padding: 10px 12px;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-dim);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .cli-table td {
+            padding: 10px 12px;
+            font-size: 0.9em;
+            border-bottom: 1px solid rgba(30, 41, 59, 0.5);
+        }
+
+        .cli-table td:first-child {
+            font-family: 'Consolas', monospace;
+            color: var(--green);
+            white-space: nowrap;
+        }
+
+        .cli-table td:last-child {
+            color: var(--text-mid);
+        }
+
+        /* Scroll animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav>
+        <div class="nav-logo">Anomaly Surround</div>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#install-guide">Install Guide</a></li>
+            <li><a href="#download" class="nav-cta">Download</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <span class="hero-badge">Free &amp; Open Source</span>
+        <h1>
+            <span class="gradient">7.1 Virtual Surround</span><br>
+            For Your Headphones
+        </h1>
+        <p>
+            Anomaly Surround transforms your stereo headphones into a full 7.1 surround sound system.
+            HRTF spatial audio, parametric EQ, and automatic game profile switching — all in one app.
+        </p>
+        <div class="hero-buttons">
+            <a href="anomaly-surround.zip" download class="btn-primary">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg>
+                Download Now
+            </a>
+            <a href="#features" class="btn-secondary">
+                Learn More
+            </a>
+        </div>
+
+        <!-- App Preview -->
+        <div class="hero-preview">
+            <div class="preview-window">
+                <div class="preview-titlebar">
+                    <div class="preview-dot" style="background:#ef4444"></div>
+                    <div class="preview-dot" style="background:#f59e0b"></div>
+                    <div class="preview-dot" style="background:#34d399"></div>
+                    <span style="color:#64748b;font-size:0.8em;margin-left:10px;">Anomaly Surround</span>
+                </div>
+                <div class="preview-body">
+                    <div class="preview-eq">
+                        <div class="preview-eq-title">PARAMETRIC EQUALIZER</div>
+                        <div class="eq-bars">
+                            <div class="eq-bar" style="height:40%;background:linear-gradient(to top,#7c3aed,#a78bfa)"></div>
+                            <div class="eq-bar" style="height:55%;background:linear-gradient(to top,#7c3aed,#a78bfa)"></div>
+                            <div class="eq-bar" style="height:70%;background:linear-gradient(to top,#6366f1,#818cf8)"></div>
+                            <div class="eq-bar" style="height:85%;background:linear-gradient(to top,#6366f1,#818cf8)"></div>
+                            <div class="eq-bar" style="height:95%;background:linear-gradient(to top,#3b82f6,#60a5fa)"></div>
+                            <div class="eq-bar" style="height:80%;background:linear-gradient(to top,#3b82f6,#60a5fa)"></div>
+                            <div class="eq-bar" style="height:65%;background:linear-gradient(to top,#2dd4bf,#34d399)"></div>
+                            <div class="eq-bar" style="height:75%;background:linear-gradient(to top,#2dd4bf,#34d399)"></div>
+                            <div class="eq-bar" style="height:50%;background:linear-gradient(to top,#34d399,#6ee7b7)"></div>
+                            <div class="eq-bar" style="height:35%;background:linear-gradient(to top,#34d399,#6ee7b7)"></div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;margin-top:8px;">
+                            <span style="font-size:0.7em;color:#64748b">31Hz</span>
+                            <span style="font-size:0.7em;color:#64748b">1kHz</span>
+                            <span style="font-size:0.7em;color:#64748b">16kHz</span>
+                        </div>
+                    </div>
+                    <div class="preview-surround">
+                        <div class="preview-eq-title" style="margin-bottom:10px;">7.1 SURROUND</div>
+                        <div class="surround-visual">
+                            <div class="surround-ring r1"></div>
+                            <div class="surround-ring r2"></div>
+                            <div class="surround-ring r3"></div>
+                            <div class="surround-center"></div>
+                            <div class="speaker-dot fl"></div>
+                            <div class="speaker-dot fr"></div>
+                            <div class="speaker-dot c"></div>
+                            <div class="speaker-dot sl"></div>
+                            <div class="speaker-dot sr"></div>
+                            <div class="speaker-dot rl"></div>
+                            <div class="speaker-dot rr"></div>
+                            <div class="speaker-dot lfe"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <div class="stats-bar">
+        <div class="stat">
+            <div class="stat-number">7.1</div>
+            <div class="stat-label">Virtual Channels</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">10</div>
+            <div class="stat-label">EQ Bands</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">40+</div>
+            <div class="stat-label">Games Supported</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">3</div>
+            <div class="stat-label">Built-in Presets</div>
+        </div>
+    </div>
+
+    <!-- Features -->
+    <section class="section" id="features">
+        <div class="section-header reveal">
+            <h2>Everything You Need In One App</h2>
+            <p>Professional-grade audio control designed for gamers who demand more from their headphones.</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card reveal">
+                <div class="feature-icon" style="background:rgba(124,58,237,0.15);">
+                    <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#a78bfa" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                </div>
+                <h3>HRTF Spatial Audio</h3>
+                <p>Head-Related Transfer Function processing simulates realistic 3D positional audio. Hear footsteps behind you, gunshots to your left — pinpoint accuracy through stereo headphones.</p>
+            </div>
+
+            <div class="feature-card reveal">
+                <div class="feature-icon" style="background:rgba(96,165,250,0.15);">
+                    <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#60a5fa" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                </div>
+                <h3>10-Band Parametric EQ</h3>
+                <p>Full parametric equalizer from 31Hz to 16kHz with adjustable Q factor and preamp gain. Fine-tune every frequency to match your headphones and preferences.</p>
+            </div>
+
+            <div class="feature-card reveal">
+                <div class="feature-icon" style="background:rgba(52,211,153,0.15);">
+                    <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#34d399" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                </div>
+                <h3>Auto Game Detection</h3>
+                <p>Automatically detects when you launch a game and switches to the optimal audio profile. Supports 40+ titles out of the box — Valorant, CS2, Elden Ring, and more.</p>
+            </div>
+
+            <div class="feature-card reveal">
+                <div class="feature-icon" style="background:rgba(245,158,11,0.15);">
+                    <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#f59e0b" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg>
+                </div>
+                <h3>Per-Game Profiles</h3>
+                <p>Create custom audio profiles for each game. Boost footstep frequencies for competitive FPS, or maximize bass for immersive RPGs. Save unlimited presets.</p>
+            </div>
+
+            <div class="feature-card reveal">
+                <div class="feature-icon" style="background:rgba(239,68,68,0.15);">
+                    <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#ef4444" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                </div>
+                <h3>Virtual 7.1 Channels</h3>
+                <p>Full 7.1 channel simulation with independent control over Front, Center, Side, Rear, and LFE channels. Adjust stereo width, room size, and cross-feed.</p>
+            </div>
+
+            <div class="feature-card reveal">
+                <div class="feature-icon" style="background:rgba(167,139,250,0.15);">
+                    <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#a78bfa" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+                </div>
+                <h3>Background Service</h3>
+                <p>Runs silently in your system tray. Auto-starts with Windows (optional), monitors games, and applies profiles — all without interrupting your gameplay.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="section" id="how-it-works">
+        <div class="section-header reveal">
+            <h2>Up and Running in 3 Steps</h2>
+            <p>No complex setup. No subscriptions. Just better audio.</p>
+        </div>
+
+        <div class="steps reveal">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Install Equalizer APO</h3>
+                <p>Free, open-source audio driver. Install it and select your headphones in the configurator.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Launch Anomaly Surround</h3>
+                <p>Run the app, pick a preset (FPS, RPG, Music) or customize your own profile from scratch.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Game On</h3>
+                <p>That's it. The app detects your games and auto-switches profiles. Just play.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Presets -->
+    <section class="section">
+        <div class="section-header reveal">
+            <h2>Built-in Presets</h2>
+            <p>Tuned for different use cases. Use as-is or customize to your taste.</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card reveal">
+                <div class="feature-icon" style="background:rgba(239,68,68,0.15);">
+                    <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                </div>
+                <h3>FPS Competitive</h3>
+                <p>Boosted mids and highs for crystal-clear footsteps and gunshots. Maximized surround width for precise directional audio. Reduced bass to cut distracting rumble.</p>
+            </div>
+
+            <div class="feature-card reveal">
+                <div class="feature-icon" style="background:rgba(52,211,153,0.15);">
+                    <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#34d399" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                </div>
+                <h3>RPG / Immersive</h3>
+                <p>Rich, full-bodied sound with enhanced bass and wide soundstage. Larger room size for epic environments. Perfect for open-world games and cinematic experiences.</p>
+            </div>
+
+            <div class="feature-card reveal">
+                <div class="feature-icon" style="background:rgba(96,165,250,0.15);">
+                    <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#60a5fa" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                </div>
+                <h3>Music</h3>
+                <p>Balanced frequency response optimized for music listening. Surround processing disabled for pure stereo. Warm bass with crisp highs — faithful to the mix.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation & Usage Guide -->
+    <section class="section" id="install-guide">
+        <div class="section-header reveal">
+            <h2>Installation & Usage Guide</h2>
+            <p>Complete step-by-step instructions to get Anomaly Surround running on your system.</p>
+        </div>
+
+        <div class="guide-section">
+
+            <!-- Prerequisites -->
+            <div class="guide-block reveal">
+                <h3><span class="guide-step-badge">1</span> Prerequisites</h3>
+                <p>Before installing Anomaly Surround, make sure you have:</p>
+                <ul>
+                    <li><strong>Windows 10 or 11</strong></li>
+                    <li><strong>Python 3.10 or newer</strong> &mdash; <a href="https://python.org/downloads" target="_blank">Download from python.org</a>. During install, check <strong>"Add Python to PATH"</strong>.</li>
+                    <li><strong>Equalizer APO</strong> &mdash; <a href="https://sourceforge.net/projects/equalizerapo/" target="_blank">Download from SourceForge</a>. This is the free, open-source audio engine that handles all DSP processing.</li>
+                </ul>
+                <div class="guide-note">
+                    <strong>Important:</strong> Without Equalizer APO, the app can run but cannot apply any audio processing. Make sure to install it first.
+                </div>
+            </div>
+
+            <!-- Install Equalizer APO -->
+            <div class="guide-block reveal">
+                <h3><span class="guide-step-badge">2</span> Configure Equalizer APO</h3>
+                <p>After installing Equalizer APO:</p>
+                <ol>
+                    <li>The <strong>Configurator</strong> will open automatically after installation.</li>
+                    <li>Find your headphones in the device list (e.g., <strong>HyperX Cloud Alpha S</strong>).</li>
+                    <li>Check the box next to your headphones to enable processing on that device.</li>
+                    <li>Click <strong>OK</strong> and <strong>restart your computer</strong>.</li>
+                </ol>
+                <div class="guide-tip">
+                    <strong>Tip:</strong> If you need to re-open the Configurator later, find it in Start Menu > Equalizer APO > Configurator.
+                </div>
+            </div>
+
+            <!-- Install Anomaly Surround -->
+            <div class="guide-block reveal">
+                <h3><span class="guide-step-badge">3</span> Install Anomaly Surround</h3>
+                <p>Download the app and install its dependencies:</p>
+                <div class="code-block">
+                    <span class="comment"># Navigate to the app folder</span><br>
+                    <span class="command">cd</span> anomaly-surround<br><br>
+                    <span class="comment"># Run the setup script (installs Python dependencies)</span><br>
+                    <span class="command">setup.bat</span><br><br>
+                    <span class="comment"># Or install manually</span><br>
+                    <span class="command">pip install</span> <span class="flag">pycaw psutil comtypes</span>
+                </div>
+                <p>That's it for installation. The app is ready to use.</p>
+            </div>
+
+            <!-- Launching the App -->
+            <div class="guide-block reveal">
+                <h3><span class="guide-step-badge">4</span> Launch the App</h3>
+                <p>Anomaly Surround has three modes. Choose whichever fits your workflow:</p>
+
+                <div class="usage-grid">
+                    <div class="usage-card">
+                        <h4>GUI Mode (Recommended)</h4>
+                        <p>Full graphical interface with EQ sliders, surround controls, and game management.</p>
+                        <div class="code-block" style="margin-top:10px;">
+                            <span class="command">python</span> main.py
+                        </div>
+                        <p>Or just double-click <strong>launch.bat</strong>.</p>
+                    </div>
+                    <div class="usage-card">
+                        <h4>Background / Tray Mode</h4>
+                        <p>Runs silently in the system tray. Monitors games and auto-switches profiles.</p>
+                        <div class="code-block" style="margin-top:10px;">
+                            <span class="command">python</span> main.py <span class="flag">--tray</span>
+                        </div>
+                    </div>
+                    <div class="usage-card">
+                        <h4>CLI Mode</h4>
+                        <p>Command-line interface for scripting and quick adjustments.</p>
+                        <div class="code-block" style="margin-top:10px;">
+                            <span class="command">python</span> main.py <span class="flag">--cli</span> status
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Using the GUI -->
+            <div class="guide-block reveal">
+                <h3><span class="guide-step-badge">5</span> Using the GUI</h3>
+                <p>The GUI has five tabs:</p>
+
+                <ul>
+                    <li><strong>Main</strong> &mdash; Select your active profile, toggle surround/HRTF/EQ on or off, and control master volume. You'll also see the status of Equalizer APO and the game monitor here.</li>
+                    <li><strong>Equalizer</strong> &mdash; 10-band parametric EQ with vertical sliders (31Hz to 16kHz). Load a preset (FPS, RPG, Music) or drag the sliders to customize. Adjust preamp gain to prevent clipping. Click <strong>Apply EQ</strong> when done.</li>
+                    <li><strong>Surround</strong> &mdash; Configure virtual 7.1 channel levels individually: Stereo Width, Center, LFE (sub-bass), Rear, Side channels, and Room Size. Toggle Windows Sonic spatial audio on or off.</li>
+                    <li><strong>Games</strong> &mdash; View all game-to-profile mappings (40+ built-in). Add your own custom mappings by entering the game's .exe filename and selecting a profile. The app auto-detects running games and switches profiles.</li>
+                    <li><strong>Settings</strong> &mdash; Toggle auto-start with Windows, minimize-to-tray behavior, game scan interval, and view detected audio devices.</li>
+                </ul>
+
+                <div class="guide-tip">
+                    <strong>Tip:</strong> Use <strong>Save As...</strong> on the Main tab to save your custom configuration as a new profile you can switch to anytime.
+                </div>
+            </div>
+
+            <!-- CLI Reference -->
+            <div class="guide-block reveal">
+                <h3><span class="guide-step-badge">6</span> CLI Commands Reference</h3>
+                <p>All CLI commands use the format: <code style="color:var(--green);">python main.py --cli &lt;command&gt;</code></p>
+
+                <table class="cli-table">
+                    <thead>
+                        <tr><th>Command</th><th>Description</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>status</td><td>Show current status, active profile, and detected devices</td></tr>
+                        <tr><td>profiles</td><td>List all available profiles (built-in and custom)</td></tr>
+                        <tr><td>apply &lt;name&gt;</td><td>Apply a profile (e.g., <code>apply fps</code>)</td></tr>
+                        <tr><td>eq</td><td>View current EQ band settings</td></tr>
+                        <tr><td>eq -b 3 -g 4.5</td><td>Set EQ band 3 to +4.5 dB</td></tr>
+                        <tr><td>surround on/off</td><td>Enable or disable virtual surround</td></tr>
+                        <tr><td>volume 75</td><td>Set master volume to 75%</td></tr>
+                        <tr><td>games list</td><td>Show all game-to-profile mappings</td></tr>
+                        <tr><td>games detect</td><td>Scan for currently running games</td></tr>
+                        <tr><td>games add game.exe fps</td><td>Map a game executable to a profile</td></tr>
+                        <tr><td>autostart on/off</td><td>Toggle Windows startup</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Per-Game Profiles -->
+            <div class="guide-block reveal">
+                <h3><span class="guide-step-badge">7</span> Setting Up Per-Game Profiles</h3>
+                <p>Anomaly Surround automatically detects 40+ games and switches to the best profile. Here's how to add your own:</p>
+
+                <ol>
+                    <li><strong>Find the game's .exe name</strong> &mdash; Open Task Manager while the game is running, find the process name (e.g., <code>mygame.exe</code>).</li>
+                    <li><strong>In the GUI:</strong> Go to the <strong>Games</strong> tab, type the exe name, select a profile, and click <strong>Add</strong>.</li>
+                    <li><strong>In the CLI:</strong> Run <code style="color:var(--green);">python main.py --cli games add mygame.exe fps</code></li>
+                </ol>
+
+                <p>When the game launches, the app detects it and switches profiles automatically. When you close the game, it reverts to your default profile.</p>
+
+                <div class="guide-note">
+                    <strong>Note:</strong> The game monitor scans for running processes every 5 seconds (configurable in Settings). This uses minimal CPU resources.
+                </div>
+            </div>
+
+            <!-- Auto-Start -->
+            <div class="guide-block reveal">
+                <h3><span class="guide-step-badge">8</span> Running on Startup (Optional)</h3>
+                <p>To have Anomaly Surround start automatically with Windows and run in the background:</p>
+
+                <ul>
+                    <li><strong>GUI:</strong> Go to <strong>Settings</strong> tab and check <strong>"Start with Windows"</strong>.</li>
+                    <li><strong>CLI:</strong> Run <code style="color:var(--green);">python main.py --cli autostart on</code></li>
+                </ul>
+
+                <p>This creates a startup entry that launches the app in tray/background mode. To disable it later, uncheck the option or run <code style="color:var(--green);">autostart off</code>.</p>
+            </div>
+
+            <!-- Troubleshooting -->
+            <div class="guide-block reveal">
+                <h3><span class="guide-step-badge">?</span> Troubleshooting</h3>
+                <ul>
+                    <li><strong>"Equalizer APO not installed"</strong> &mdash; Make sure Equalizer APO is installed and you've enabled it for your headphones in the Configurator. Restart your PC after setup.</li>
+                    <li><strong>"Permission denied"</strong> &mdash; Run the app as Administrator. Equalizer APO's config files are in Program Files, which requires elevated permissions to write.</li>
+                    <li><strong>No sound difference after applying</strong> &mdash; Open Equalizer APO's own "Configuration Editor" and verify that the config.txt file has been updated. Make sure no other audio software is overriding it.</li>
+                    <li><strong>Game not auto-detected</strong> &mdash; Check the exact .exe name in Task Manager and add it manually via the Games tab or CLI.</li>
+                    <li><strong>Audio crackling or distortion</strong> &mdash; Lower the preamp gain in the Equalizer tab. High EQ boosts combined with loud audio can cause clipping.</li>
+                </ul>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Download CTA -->
+    <section class="cta-section" id="download">
+        <h2 class="reveal">Ready to Level Up Your Audio?</h2>
+        <p class="reveal">Free download. No account required. No telemetry.</p>
+        <div class="reveal">
+            <a href="anomaly-surround.zip" download class="btn-primary" style="font-size:1.15em;padding:18px 44px;">
+                <svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg>
+                Download Anomaly Surround
+            </a>
+        </div>
+        <p class="reveal" style="margin-top:20px;font-size:0.85em;color:#4b5563;">
+            Requires: Windows 10/11 &bull; Python 3.10+ &bull; Equalizer APO
+        </p>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>Anomaly Surround &mdash; Built for gamers who hear the difference.</p>
+        <p style="margin-top:8px;">Optimized for HyperX Cloud Alpha S &bull; Works with any headphones</p>
+    </footer>
+
+    <!-- Scroll reveal script -->
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                const target = document.querySelector(link.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>
