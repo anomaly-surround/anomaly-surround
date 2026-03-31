@@ -1,7 +1,7 @@
 """Game process monitor - detects running games and auto-switches profiles."""
 import threading
 import time
-import psutil
+import subprocess
 
 
 # Common game executables mapped to profile types
@@ -78,16 +78,31 @@ class GameMonitor:
         mappings.update(self.custom_mappings)
         return mappings
 
+    def _get_running_process_names(self):
+        """Get running process names using tasklist (avoids opening process handles)."""
+        try:
+            result = subprocess.run(
+                ["tasklist", "/FO", "CSV", "/NH"],
+                capture_output=True, text=True, timeout=10,
+                creationflags=subprocess.CREATE_NO_WINDOW
+            )
+            names = set()
+            for line in result.stdout.splitlines():
+                if line.startswith('"'):
+                    name = line.split('"')[1]
+                    if name:
+                        names.add(name.lower())
+            return names
+        except Exception:
+            return set()
+
     def _scan_processes(self):
         """Scan running processes for known games."""
         mappings = self.get_all_mappings()
-        for proc in psutil.process_iter(["name"]):
-            try:
-                name = proc.info["name"]
-                if name and name.lower() in mappings:
-                    return name.lower(), mappings[name.lower()]
-            except (psutil.NoSuchProcess, psutil.AccessDenied):
-                continue
+        running = self._get_running_process_names()
+        for name in running:
+            if name in mappings:
+                return name, mappings[name]
         return None, None
 
     def _monitor_loop(self):
@@ -129,14 +144,11 @@ class GameMonitor:
         """Get list of currently detected games."""
         games = []
         mappings = self.get_all_mappings()
-        for proc in psutil.process_iter(["name"]):
-            try:
-                name = proc.info["name"]
-                if name and name.lower() in mappings:
-                    games.append({
-                        "exe": name.lower(),
-                        "profile": mappings[name.lower()],
-                    })
-            except (psutil.NoSuchProcess, psutil.AccessDenied):
-                continue
+        running = self._get_running_process_names()
+        for name in running:
+            if name in mappings:
+                games.append({
+                    "exe": name,
+                    "profile": mappings[name],
+                })
         return games

@@ -110,7 +110,7 @@ def generate_hrtf_config(profile):
     return "\n".join(lines)
 
 
-def write_full_config(profile, enabled=True):
+def write_full_config(profile, enabled=True, force=False):
     """Write the complete Equalizer APO configuration."""
     if not is_eqapo_installed():
         return False, "Equalizer APO is not installed"
@@ -147,14 +147,23 @@ def write_full_config(profile, enabled=True):
         config_text = "\n".join(lines)
 
     try:
-        # Only write if config actually changed to avoid audio interruption
-        try:
-            with open(EQAPO_MAIN_CONFIG, "r") as f:
-                current = f.read()
-            if current.strip() == config_text.strip():
-                return True, "No changes needed"
-        except FileNotFoundError:
-            pass
+        # Strip comments for comparison so profile name changes don't trigger
+        # unnecessary rewrites (EQ APO reinitializes on every file change,
+        # causing a brief audio mute)
+        def strip_comments(text):
+            return "\n".join(
+                line for line in text.strip().splitlines()
+                if line.strip() and not line.strip().startswith("#")
+            )
+
+        if not force:
+            try:
+                with open(EQAPO_MAIN_CONFIG, "r") as f:
+                    current = f.read()
+                if strip_comments(current) == strip_comments(config_text):
+                    return True, "No changes needed"
+            except FileNotFoundError:
+                pass
 
         with open(EQAPO_MAIN_CONFIG, "w") as f:
             f.write(config_text)
@@ -211,19 +220,28 @@ public class AudioConfig {
 
 
 def get_audio_devices():
-    """List available audio output devices."""
+    """List audio output devices, excluding monitor/GPU/HDMI endpoints."""
     devices = []
     try:
         from pycaw.pycaw import AudioUtilities
         all_devices = AudioUtilities.GetAllDevices()
+        # Skip keywords for monitor/GPU/digital outputs that aren't real speakers
+        skip = ["nvidia", "hdmi", "digital audio", "digital output",
+                "amd high definition", "internal aux"]
         for d in all_devices:
-            if d.FriendlyName:
-                devices.append({
-                    "name": d.FriendlyName,
-                    "id": d.id,
-                })
+            if not d.FriendlyName or not d.id:
+                continue
+            # Only render (output) endpoints
+            if not d.id.startswith("{0.0.0."):
+                continue
+            name_lower = d.FriendlyName.lower()
+            if any(kw in name_lower for kw in skip):
+                continue
+            devices.append({
+                "name": d.FriendlyName,
+                "id": d.id,
+            })
     except Exception:
-        # Fallback
         devices.append({"name": "Default Device", "id": "default"})
     return devices
 

@@ -1023,7 +1023,7 @@
                     <span class="comment"># Run the setup script (installs Python dependencies)</span><br>
                     <span class="command">setup.bat</span><br><br>
                     <span class="comment"># Or install manually</span><br>
-                    <span class="command">pip install</span> <span class="flag">pycaw psutil comtypes</span>
+                    <span class="command">pip install</span> <span class="flag">pycaw comtypes</span>
                 </div>
                 <p>That's it for installation. The app is ready to use.</p>
             </div>
@@ -1165,6 +1165,7 @@
                     <li><strong>No sound difference after applying</strong> &mdash; Open Equalizer APO's own "Configuration Editor" and verify that the config.txt file has been updated. Make sure no other audio software is overriding it.</li>
                     <li><strong>Game not auto-detected</strong> &mdash; Check the exact .exe name in Task Manager and add it manually via the Games tab or CLI.</li>
                     <li><strong>Audio crackling or distortion</strong> &mdash; Lower the preamp gain in the Equalizer tab. High EQ boosts combined with loud audio can cause clipping.</li>
+                    <li><strong>Audio mutes when opening or closing a game</strong> &mdash; Some games take exclusive control of the audio device, which interrupts Equalizer APO. Make sure <strong>"Auto-apply EQ when game detected"</strong> is checked in the Games tab. This lets the app automatically re-apply your audio settings after the game finishes initializing. If audio is still muted, click <strong>"Apply"</strong> on the Equalizer or Surround tab to force a config refresh.</li>
                 </ul>
             </div>
 

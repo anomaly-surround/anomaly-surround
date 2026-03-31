@@ -252,15 +252,7 @@ class SurroundApp:
 
         self._card_title(dev_card, "Audio Device")
 
-        self.all_devices = get_audio_devices()
-        # Filter to output devices only (exclude inputs like microphones)
-        self.output_devices = [d for d in self.all_devices
-                               if not any(kw in d["name"].lower() for kw in
-                                         ["microphone", "mic", "line in", "stereo mix",
-                                          "aux jack", "rear green", "rear blue",
-                                          "rear pink", "front pink", "front green",
-                                          "subwoofer", "center", "side", "rear (",
-                                          "front ("])]
+        self.output_devices = get_audio_devices()
         device_names = [d["name"] for d in self.output_devices]
 
         saved_device = self.settings.get("selected_device", "")
@@ -895,7 +887,9 @@ class SurroundApp:
         base_eq = self.current_profile.get("eq_bands", DEFAULT_EQ_BANDS)
         corrected = get_corrected_eq(base_eq, self.detected_headphone)
         self.current_profile["eq_bands"] = corrected
-        save_profile(self.settings["active_profile"], self.current_profile)
+        # Save under the currently selected profile name, not the active_profile
+        # setting (which stays as "default" even when a game profile is active)
+        save_profile(self.profile_var.get(), self.current_profile)
         self._refresh_eq_sliders()
         self._apply_current()
         self._show_toast(f"EQ corrected for {self.detected_headphone['name']}")
@@ -1039,6 +1033,12 @@ class SurroundApp:
         if is_eqapo_installed():
             write_full_config(self.current_profile)
 
+    def _force_apply_current(self):
+        """Force-write config even if unchanged, to restore EQ APO after a game
+        grabs/releases exclusive audio control."""
+        if is_eqapo_installed():
+            write_full_config(self.current_profile, force=True)
+
     def _add_game_mapping(self):
         exe = self.game_exe_entry.get().strip()
         profile = self.game_profile_var.get()
@@ -1115,9 +1115,13 @@ class SurroundApp:
             self.game_status_label.config(text="Disabled", fg=TEXT_DIM)
 
     def _on_game_detected(self, exe, profile_name):
-        self.root.after(0, lambda: self._handle_game_detected(exe, profile_name))
+        # Delay to let the game finish initializing its audio device
+        self.root.after(3000, lambda: self._handle_game_detected(exe, profile_name))
 
     def _handle_game_detected(self, exe, profile_name):
+        # Game may have already closed during the delay
+        if not self.game_monitor or not self.game_monitor.current_game:
+            return
         self.detected_label.config(text=f"Detected: {exe} -> {profile_name}", fg=GREEN)
         self.game_status_label.config(text=f"Playing: {exe}", fg=GREEN)
         self.current_profile = load_profile(profile_name)
@@ -1125,11 +1129,12 @@ class SurroundApp:
         self._refresh_eq_sliders()
         self._refresh_surround_sliders()
         if self.settings.get("auto_apply_on_game", True):
-            self._apply_current()
+            self._force_apply_current()
         self._show_toast(f"Switched to {profile_name}")
 
     def _on_game_closed(self, exe):
-        self.root.after(0, lambda: self._handle_game_closed(exe))
+        # Delay to let the audio device settle after the game releases it
+        self.root.after(2000, lambda: self._handle_game_closed(exe))
 
     def _handle_game_closed(self, exe):
         self.detected_label.config(text=f"{exe} closed — reverted to default", fg=TEXT_DIM)
@@ -1140,7 +1145,7 @@ class SurroundApp:
         self._refresh_eq_sliders()
         self._refresh_surround_sliders()
         if self.settings.get("auto_apply_on_game", True):
-            self._apply_current()
+            self._force_apply_current()
 
     def _update_status(self):
         if is_eqapo_installed():
