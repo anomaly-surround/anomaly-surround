@@ -12,6 +12,7 @@ from config import (
     DEFAULT_HOTKEY_LABELS
 )
 from hotkeys import HotkeyManager
+from headphone_db import detect_headphone, get_corrected_eq
 from audio_engine import (
     is_eqapo_installed, write_full_config, get_audio_devices,
     set_master_volume
@@ -59,6 +60,7 @@ class SurroundApp:
         self.eq_sliders = []
         self.game_monitor = None
         self.hotkey_manager = HotkeyManager()
+        self.detected_headphone = detect_headphone(get_audio_devices())
 
         self.style = ttk.Style()
         self.style.theme_use("clam")
@@ -222,6 +224,30 @@ class SurroundApp:
         self.game_status_label = tk.Label(inner2, text="Scanning...",
                                          font=(FONT, 10), fg=TEXT_DIM, bg=BG_CARD)
         self.game_status_label.pack(side="right")
+
+        # Detected headphone
+        hp_card = self._card(tab)
+        hp_card.pack(fill="x", pady=(6, 0))
+
+        hp_inner = tk.Frame(hp_card, bg=BG_CARD)
+        hp_inner.pack(fill="x", padx=20, pady=14)
+
+        tk.Label(hp_inner, text="Headphone", font=(FONT, 10),
+                fg=TEXT_MID, bg=BG_CARD).pack(side="left")
+
+        if self.detected_headphone:
+            hp_name = self.detected_headphone["name"]
+            hp_row = tk.Frame(hp_inner, bg=BG_CARD)
+            hp_row.pack(side="right")
+            tk.Label(hp_row, text=hp_name, font=(FONT, 10, "bold"),
+                    fg=GREEN, bg=BG_CARD).pack(side="left", padx=(0, 8))
+            tk.Button(hp_row, text="Apply Correction", font=(FONT, 8, "bold"),
+                     bg=ACCENT, fg="white", bd=0, padx=8, pady=3, cursor="hand2",
+                     activebackground=ACCENT_LIGHT, activeforeground="white",
+                     command=self._apply_headphone_correction).pack(side="left")
+        else:
+            tk.Label(hp_inner, text="Not recognized (using default EQ)",
+                    font=(FONT, 10), fg=TEXT_DIM, bg=BG_CARD).pack(side="right")
 
     # ==================== EQ TAB ====================
     def _build_eq_tab(self):
@@ -392,7 +418,19 @@ class SurroundApp:
         card1 = self._card(tab)
         card1.pack(fill="x", pady=(12, 6))
 
-        self._card_title(card1, "Game Auto-Detection")
+        detect_row = tk.Frame(card1, bg=BG_CARD)
+        detect_row.pack(fill="x", padx=20, pady=(14, 4))
+
+        tk.Label(detect_row, text="Game Auto-Detection", font=(FONT, 11, "bold"),
+                fg=TEXT, bg=BG_CARD).pack(side="left")
+
+        self.game_detect_var = tk.BooleanVar(value=self.settings.get("game_detection", True))
+        self.game_detect_btn = tk.Button(detect_row, text="ON" if self.game_detect_var.get() else "OFF",
+                       font=(FONT, 9, "bold"), width=5, bd=0, cursor="hand2",
+                       command=self._toggle_game_detection)
+        self._style_toggle_btn(self.game_detect_btn, self.game_detect_var.get())
+        self.game_detect_btn.pack(side="right")
+
         tk.Label(card1, text="Switches profile automatically when a game is detected.",
                 font=(FONT, 9), fg=TEXT_DIM, bg=BG_CARD).pack(anchor="w", padx=20, pady=(0, 4))
         self.detected_label = tk.Label(card1, text="No games detected",
@@ -784,6 +822,17 @@ class SurroundApp:
 
     # ==================== ACTIONS ====================
 
+    def _apply_headphone_correction(self):
+        if not self.detected_headphone:
+            return
+        base_eq = self.current_profile.get("eq_bands", DEFAULT_EQ_BANDS)
+        corrected = get_corrected_eq(base_eq, self.detected_headphone)
+        self.current_profile["eq_bands"] = corrected
+        save_profile(self.settings["active_profile"], self.current_profile)
+        self._refresh_eq_sliders()
+        self._apply_current()
+        self._show_toast(f"EQ corrected for {self.detected_headphone['name']}")
+
     def _on_profile_change(self, event=None):
         name = self.profile_var.get()
         self.current_profile = load_profile(name)
@@ -854,7 +903,10 @@ class SurroundApp:
         level = int(float(val))
         self.volume_label.config(text=f"{level}%")
         self.settings["master_volume"] = level
-        set_master_volume(level)
+        # Debounce - only apply after user stops dragging
+        if hasattr(self, '_vol_timer'):
+            self.root.after_cancel(self._vol_timer)
+        self._vol_timer = self.root.after(100, lambda: set_master_volume(level))
 
     def _on_preamp_change(self):
         self.preamp_label.config(text=f"{self.preamp_var.get():+.1f} dB")
@@ -958,6 +1010,26 @@ class SurroundApp:
 
     # ==================== GAME MONITOR ====================
 
+    def _toggle_game_detection(self):
+        self.game_detect_var.set(not self.game_detect_var.get())
+        enabled = self.game_detect_var.get()
+        self.settings["game_detection"] = enabled
+        save_settings(self.settings)
+        self._style_toggle_btn(self.game_detect_btn, enabled)
+        self.game_detect_btn.config(text="ON" if enabled else "OFF")
+
+        if enabled:
+            if self.game_monitor and not self.game_monitor.running:
+                self.game_monitor.start()
+            self.game_status_label.config(text="Scanning...", fg=TEXT_DIM)
+            self._show_toast("Game detection ON")
+        else:
+            if self.game_monitor and self.game_monitor.running:
+                self.game_monitor.stop()
+            self.game_status_label.config(text="Disabled", fg=TEXT_DIM)
+            self.detected_label.config(text="Auto-detection disabled", fg=TEXT_DIM)
+            self._show_toast("Game detection OFF")
+
     def _start_game_monitor(self):
         self.game_monitor = GameMonitor(
             on_game_detected=self._on_game_detected,
@@ -966,7 +1038,10 @@ class SurroundApp:
         custom = self.settings.get("game_profiles", {})
         for exe, profile in custom.items():
             self.game_monitor.add_game_mapping(exe, profile)
-        self.game_monitor.start()
+        if self.settings.get("game_detection", True):
+            self.game_monitor.start()
+        else:
+            self.game_status_label.config(text="Disabled", fg=TEXT_DIM)
 
     def _on_game_detected(self, exe, profile_name):
         self.root.after(0, lambda: self._handle_game_detected(exe, profile_name))
@@ -1070,7 +1145,12 @@ class SurroundApp:
         if self._tray_icon:
             self._tray_icon.stop()
             self._tray_icon = None
-        self.root.after(0, self._force_close)
+        self.hotkey_manager.unregister_all()
+        if self.game_monitor:
+            self.game_monitor.stop()
+        save_settings(self.settings)
+        import os
+        os._exit(0)
 
     def on_close(self):
         if self.tray_var.get():
