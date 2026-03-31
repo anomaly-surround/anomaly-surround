@@ -231,9 +231,6 @@ class SurroundApp:
 
         self._card_title(dev_card, "Audio Device")
 
-        dev_row = tk.Frame(dev_card, bg=BG_CARD)
-        dev_row.pack(fill="x", padx=20, pady=(0, 14))
-
         self.all_devices = get_audio_devices()
         # Filter to output devices only (exclude inputs like microphones)
         self.output_devices = [d for d in self.all_devices
@@ -249,18 +246,20 @@ class SurroundApp:
         self.device_var = tk.StringVar(value=saved_device if saved_device in device_names else
                                       (device_names[0] if device_names else ""))
 
-        self.device_combo = ttk.Combobox(dev_row, textvariable=self.device_var,
+        self.device_combo = ttk.Combobox(dev_card, textvariable=self.device_var,
                                          values=device_names, state="readonly",
-                                         width=45, font=(FONT, 10))
-        self.device_combo.pack(side="left", padx=(0, 8))
+                                         font=(FONT, 10))
+        self.device_combo.pack(fill="x", padx=20, pady=(0, 10))
         self.device_combo.bind("<<ComboboxSelected>>", self._on_device_change)
 
-        # Headphone detection label
-        self.hp_label = tk.Label(dev_row, text="", font=(FONT, 9, "bold"),
-                                fg=GREEN, bg=BG_CARD)
-        self.hp_label.pack(side="left", padx=(8, 0))
+        hp_row = tk.Frame(dev_card, bg=BG_CARD)
+        hp_row.pack(fill="x", padx=20, pady=(0, 14))
 
-        tk.Button(dev_row, text="Apply Correction", font=(FONT, 8, "bold"),
+        self.hp_label = tk.Label(hp_row, text="", font=(FONT, 9, "bold"),
+                                fg=GREEN, bg=BG_CARD)
+        self.hp_label.pack(side="left")
+
+        tk.Button(hp_row, text="Apply Correction", font=(FONT, 8, "bold"),
                  bg=ACCENT, fg="white", bd=0, padx=8, pady=3, cursor="hand2",
                  activebackground=ACCENT_LIGHT, activeforeground="white",
                  command=self._apply_headphone_correction).pack(side="right")
