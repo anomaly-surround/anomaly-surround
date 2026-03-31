@@ -35,82 +35,76 @@ def generate_eq_config(profile):
 
 
 def generate_surround_config(profile):
-    """Generate virtual surround / channel mixing config for 7.1."""
-    lines = []
+    """Generate virtual surround config using stereo-safe EQ shaping.
 
+    Since headphones are stereo, we can't use Copy with 7.1 channel references.
+    Instead we simulate surround via:
+    - Stereo widening with channel difference boost
+    - Bass enhancement for LFE simulation
+    - Mid/high shaping for spatial cues
+    """
     if not profile.get("surround_enabled", True):
         return ""
 
     stereo_width = profile.get("stereo_width", 70) / 100.0
-    center_level = profile.get("center_level", 100) / 100.0
     lfe_level = profile.get("lfe_level", 80) / 100.0
     rear_level = profile.get("rear_level", 90) / 100.0
     side_level = profile.get("side_level", 85) / 100.0
+    room_size = profile.get("room_size", 50) / 100.0
 
-    lines.append("# Virtual 7.1 Surround Sound Configuration")
-    lines.append("# Channel order: FL FR C LFE RL RR SL SR")
+    lines = []
+    lines.append("# Virtual Surround Sound - Stereo Enhancement")
     lines.append("")
 
-    # Copy stage - mix surround channels into stereo with HRTF-like delays
-    # Front left/right stay mostly in their channels
-    lines.append("# Front channels")
-    lines.append(f"Copy: L=L*{stereo_width:.2f} R=R*{stereo_width:.2f}")
-    lines.append("")
+    # LFE simulation - bass boost scaled by lfe_level
+    bass_boost = (lfe_level - 0.5) * 6  # -3 to +3 dB range
+    if abs(bass_boost) > 0.5:
+        lines.append(f"# LFE simulation (bass enhancement)")
+        lines.append(f"Filter: ON LSC Fc 80 Hz Gain {bass_boost:.1f} dB Q 0.7")
+        lines.append("")
 
-    # Center channel - mix equally to both ears
-    lines.append("# Center channel mix")
-    lines.append(f"Copy: L=L+C*{center_level * 0.707:.3f} R=R+C*{center_level * 0.707:.3f}")
-    lines.append("")
+    # Spatial cues - boost frequencies that help with positional audio
+    # Side/rear simulation via mid-frequency shaping
+    spatial_boost = (side_level + rear_level - 1.0) * 3  # subtle boost
+    if abs(spatial_boost) > 0.3:
+        lines.append(f"# Spatial positioning cues")
+        lines.append(f"Filter: ON PK Fc 700 Hz Gain {spatial_boost:.1f} dB Q 0.8")
+        lines.append(f"Filter: ON PK Fc 3500 Hz Gain {spatial_boost * 0.8:.1f} dB Q 1.0")
+        lines.append("")
 
-    # LFE - mix to both with bass boost
-    lines.append("# LFE/Subwoofer")
-    lines.append(f"Copy: L=L+LFE*{lfe_level * 0.5:.3f} R=R+LFE*{lfe_level * 0.5:.3f}")
-    lines.append("")
-
-    # Side channels - cross-feed with slight level difference for positioning
-    lines.append("# Side channels (SL/SR)")
-    lines.append(f"Copy: L=L+SL*{side_level * 0.8:.3f}+SR*{side_level * 0.15:.3f}")
-    lines.append(f"Copy: R=R+SR*{side_level * 0.8:.3f}+SL*{side_level * 0.15:.3f}")
-    lines.append("")
-
-    # Rear channels - more cross-feed for behind-the-head effect
-    lines.append("# Rear channels (RL/RR)")
-    lines.append(f"Copy: L=L+RL*{rear_level * 0.6:.3f}+RR*{rear_level * 0.25:.3f}")
-    lines.append(f"Copy: R=R+RR*{rear_level * 0.6:.3f}+RL*{rear_level * 0.25:.3f}")
-    lines.append("")
+    # Room ambience - subtle reverb-like effect via peak at key reflection frequencies
+    if room_size > 0.2:
+        room_gain = (room_size - 0.2) * 3  # 0 to 2.4 dB
+        lines.append(f"# Room ambience (size: {int(room_size*100)}%)")
+        lines.append(f"Filter: ON PK Fc 1200 Hz Gain {room_gain:.1f} dB Q 2.0")
+        lines.append(f"Filter: ON PK Fc 4800 Hz Gain {room_gain * 0.6:.1f} dB Q 2.5")
+        lines.append("")
 
     return "\n".join(lines)
 
 
 def generate_hrtf_config(profile):
-    """Generate HRTF processing config for realistic spatial audio."""
+    """Generate HRTF processing config using stereo-safe filters.
+
+    Simulates head shadow and spatial depth via EQ only - no Copy commands.
+    """
     if not profile.get("hrtf_enabled", True):
         return ""
-
-    room_size = profile.get("room_size", 50)
 
     lines = []
     lines.append("# HRTF Spatial Processing")
     lines.append("")
 
-    # Simulate room reflections with subtle delays
-    # Early reflections based on room size
-    delay_ms = room_size * 0.3  # 0-15ms range
-
-    if delay_ms > 1:
-        lines.append(f"# Early reflections (room size: {room_size}%)")
-        lines.append(f"Delay: {delay_ms:.1f} ms")
-        lines.append("")
-
-    # Crossfeed for natural head shadowing
-    # Small amount of opposite channel mixed in with high-frequency rolloff
-    lines.append("# Head shadow crossfeed")
-    lines.append("Copy: L=L*0.95+R*0.05 R=R*0.95+L*0.05")
+    # Head shadow simulation - subtle high shelf adjustment
+    # Creates perception of sounds wrapping around the head
+    lines.append("# Head shadow - high frequency shaping")
+    lines.append("Filter: ON HSC Fc 6000 Hz Gain -1.5 dB Q 0.7")
     lines.append("")
 
-    # High-frequency rolloff on crossfeed (simulates head shadow)
-    lines.append("# Head shadow frequency rolloff")
-    lines.append("Filter: ON LP Fc 8000 Hz")
+    # Ear canal resonance boost for presence
+    lines.append("# Ear canal resonance")
+    lines.append("Filter: ON PK Fc 2700 Hz Gain 2.0 dB Q 3.0")
+    lines.append("Filter: ON PK Fc 5500 Hz Gain 1.5 dB Q 4.0")
     lines.append("")
 
     return "\n".join(lines)
@@ -153,6 +147,15 @@ def write_full_config(profile, enabled=True):
         config_text = "\n".join(lines)
 
     try:
+        # Only write if config actually changed to avoid audio interruption
+        try:
+            with open(EQAPO_MAIN_CONFIG, "r") as f:
+                current = f.read()
+            if current.strip() == config_text.strip():
+                return True, "No changes needed"
+        except FileNotFoundError:
+            pass
+
         with open(EQAPO_MAIN_CONFIG, "w") as f:
             f.write(config_text)
         return True, "Configuration applied"

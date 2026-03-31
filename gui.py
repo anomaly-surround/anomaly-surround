@@ -225,29 +225,47 @@ class SurroundApp:
                                          font=(FONT, 10), fg=TEXT_DIM, bg=BG_CARD)
         self.game_status_label.pack(side="right")
 
-        # Detected headphone
-        hp_card = self._card(tab)
-        hp_card.pack(fill="x", pady=(6, 0))
+        # Audio device selector
+        dev_card = self._card(tab)
+        dev_card.pack(fill="x", pady=(6, 0))
 
-        hp_inner = tk.Frame(hp_card, bg=BG_CARD)
-        hp_inner.pack(fill="x", padx=20, pady=14)
+        self._card_title(dev_card, "Audio Device")
 
-        tk.Label(hp_inner, text="Headphone", font=(FONT, 10),
-                fg=TEXT_MID, bg=BG_CARD).pack(side="left")
+        dev_row = tk.Frame(dev_card, bg=BG_CARD)
+        dev_row.pack(fill="x", padx=20, pady=(0, 14))
 
-        if self.detected_headphone:
-            hp_name = self.detected_headphone["name"]
-            hp_row = tk.Frame(hp_inner, bg=BG_CARD)
-            hp_row.pack(side="right")
-            tk.Label(hp_row, text=hp_name, font=(FONT, 10, "bold"),
-                    fg=GREEN, bg=BG_CARD).pack(side="left", padx=(0, 8))
-            tk.Button(hp_row, text="Apply Correction", font=(FONT, 8, "bold"),
-                     bg=ACCENT, fg="white", bd=0, padx=8, pady=3, cursor="hand2",
-                     activebackground=ACCENT_LIGHT, activeforeground="white",
-                     command=self._apply_headphone_correction).pack(side="left")
-        else:
-            tk.Label(hp_inner, text="Not recognized (using default EQ)",
-                    font=(FONT, 10), fg=TEXT_DIM, bg=BG_CARD).pack(side="right")
+        self.all_devices = get_audio_devices()
+        # Filter to output devices only (exclude inputs like microphones)
+        self.output_devices = [d for d in self.all_devices
+                               if not any(kw in d["name"].lower() for kw in
+                                         ["microphone", "mic", "line in", "stereo mix",
+                                          "aux jack", "rear green", "rear blue",
+                                          "rear pink", "front pink", "front green",
+                                          "subwoofer", "center", "side", "rear (",
+                                          "front ("])]
+        device_names = [d["name"] for d in self.output_devices]
+
+        saved_device = self.settings.get("selected_device", "")
+        self.device_var = tk.StringVar(value=saved_device if saved_device in device_names else
+                                      (device_names[0] if device_names else ""))
+
+        self.device_combo = ttk.Combobox(dev_row, textvariable=self.device_var,
+                                         values=device_names, state="readonly",
+                                         width=45, font=(FONT, 10))
+        self.device_combo.pack(side="left", padx=(0, 8))
+        self.device_combo.bind("<<ComboboxSelected>>", self._on_device_change)
+
+        # Headphone detection label
+        self.hp_label = tk.Label(dev_row, text="", font=(FONT, 9, "bold"),
+                                fg=GREEN, bg=BG_CARD)
+        self.hp_label.pack(side="left", padx=(8, 0))
+
+        tk.Button(dev_row, text="Apply Correction", font=(FONT, 8, "bold"),
+                 bg=ACCENT, fg="white", bd=0, padx=8, pady=3, cursor="hand2",
+                 activebackground=ACCENT_LIGHT, activeforeground="white",
+                 command=self._apply_headphone_correction).pack(side="right")
+
+        self._update_hp_label()
 
     # ==================== EQ TAB ====================
     def _build_eq_tab(self):
@@ -433,6 +451,19 @@ class SurroundApp:
 
         tk.Label(card1, text="Switches profile automatically when a game is detected.",
                 font=(FONT, 9), fg=TEXT_DIM, bg=BG_CARD).pack(anchor="w", padx=20, pady=(0, 4))
+
+        auto_apply_row = tk.Frame(card1, bg=BG_CARD)
+        auto_apply_row.pack(fill="x", padx=20, pady=(0, 4))
+
+        self.auto_apply_var = tk.BooleanVar(value=self.settings.get("auto_apply_on_game", True))
+        tk.Checkbutton(auto_apply_row, text="Auto-apply EQ when game detected/closed",
+                      variable=self.auto_apply_var, command=self._toggle_auto_apply,
+                      bg=BG_CARD, fg=TEXT, selectcolor=BG_INPUT,
+                      activebackground=BG_CARD, activeforeground=TEXT,
+                      font=(FONT, 9)).pack(side="left")
+        tk.Label(auto_apply_row, text="(disable if audio drops on game launch)",
+                font=(FONT, 8), fg=TEXT_DIM, bg=BG_CARD).pack(side="left", padx=6)
+
         self.detected_label = tk.Label(card1, text="No games detected",
                                       font=(FONT, 10), fg=TEXT_DIM, bg=BG_CARD)
         self.detected_label.pack(anchor="w", padx=20, pady=(0, 16))
@@ -822,6 +853,22 @@ class SurroundApp:
 
     # ==================== ACTIONS ====================
 
+    def _on_device_change(self, event=None):
+        selected = self.device_var.get()
+        self.settings["selected_device"] = selected
+        save_settings(self.settings)
+        # Re-detect headphone based on selected device
+        selected_dev = [d for d in self.output_devices if d["name"] == selected]
+        self.detected_headphone = detect_headphone(selected_dev) if selected_dev else None
+        self._update_hp_label()
+        self._show_toast(f"Device: {selected}")
+
+    def _update_hp_label(self):
+        if self.detected_headphone:
+            self.hp_label.config(text=f"Detected: {self.detected_headphone['name']}", fg=GREEN)
+        else:
+            self.hp_label.config(text="Unknown device", fg=TEXT_DIM)
+
     def _apply_headphone_correction(self):
         if not self.detected_headphone:
             return
@@ -1010,6 +1057,10 @@ class SurroundApp:
 
     # ==================== GAME MONITOR ====================
 
+    def _toggle_auto_apply(self):
+        self.settings["auto_apply_on_game"] = self.auto_apply_var.get()
+        save_settings(self.settings)
+
     def _toggle_game_detection(self):
         self.game_detect_var.set(not self.game_detect_var.get())
         enabled = self.game_detect_var.get()
@@ -1053,7 +1104,8 @@ class SurroundApp:
         self.profile_var.set(profile_name)
         self._refresh_eq_sliders()
         self._refresh_surround_sliders()
-        self._apply_current()
+        if self.settings.get("auto_apply_on_game", True):
+            self._apply_current()
         self._show_toast(f"Switched to {profile_name}")
 
     def _on_game_closed(self, exe):
@@ -1067,7 +1119,8 @@ class SurroundApp:
         self.profile_var.set(default_profile)
         self._refresh_eq_sliders()
         self._refresh_surround_sliders()
-        self._apply_current()
+        if self.settings.get("auto_apply_on_game", True):
+            self._apply_current()
 
     def _update_status(self):
         if is_eqapo_installed():
