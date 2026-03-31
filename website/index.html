@@ -1133,6 +1133,29 @@
                 <p>This creates a startup entry that launches the app in tray/background mode. To disable it later, uncheck the option or run <code style="color:var(--green);">autostart off</code>.</p>
             </div>
 
+            <!-- In-Game HRTF -->
+            <div class="guide-block reveal">
+                <h3><span class="guide-step-badge">!</span> Using With In-Game HRTF / Spatial Audio</h3>
+                <p>Many games have their own built-in HRTF or spatial audio (e.g., Valorant, CS2, Overwatch). Running both the game's HRTF and Anomaly Surround's HRTF at the same time means <strong>double-processing</strong>, which can make positional audio sound worse, not better.</p>
+
+                <div class="guide-note">
+                    <strong>Important:</strong> If a game already has good spatial audio, disable Surround and HRTF in Anomaly Surround for that game. Only use the EQ.
+                </div>
+
+                <p><strong>Best practice:</strong></p>
+                <ul>
+                    <li><strong>Game has built-in HRTF</strong> (Valorant, CS2, Overwatch, Apex Legends) &mdash; Turn OFF Surround and HRTF in Anomaly Surround. Just use the EQ to boost footstep frequencies and tweak the sound to your preference.</li>
+                    <li><strong>Game has no spatial audio</strong> &mdash; Turn ON Surround and HRTF in Anomaly Surround. The app will handle directional audio processing for you.</li>
+                </ul>
+
+                <div class="guide-tip">
+                    <strong>Tip:</strong> Create two profiles to handle this easily:
+                    <br>&bull; <strong>"FPS EQ Only"</strong> &mdash; Surround OFF, HRTF OFF, just EQ tuned for footsteps. Map this to games with built-in spatial audio.
+                    <br>&bull; <strong>"FPS Full"</strong> &mdash; Surround ON, HRTF ON. Map this to games without spatial audio.
+                    <br>Then assign each game to the right profile in the Games tab &mdash; the app auto-switches for you.
+                </div>
+            </div>
+
             <!-- Troubleshooting -->
             <div class="guide-block reveal">
                 <h3><span class="guide-step-badge">?</span> Troubleshooting</h3>
