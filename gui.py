@@ -51,9 +51,9 @@ class SurroundApp:
     def __init__(self, root):
         self.root = root
         self.root.title(APP_NAME)
-        self.root.geometry("960x720")
+        self.root.geometry("960x820")
         self.root.configure(bg=BG)
-        self.root.minsize(860, 640)
+        self.root.minsize(860, 720)
 
         self.settings = load_settings()
         self.current_profile = load_profile(self.settings["active_profile"])
@@ -133,8 +133,29 @@ class SurroundApp:
 
     # ==================== MAIN TAB ====================
     def _build_main_tab(self):
-        tab = tk.Frame(self.notebook, bg=BG)
-        self.notebook.add(tab, text="  Main  ")
+        outer = tk.Frame(self.notebook, bg=BG)
+        self.notebook.add(outer, text="  Main  ")
+
+        canvas = tk.Canvas(outer, bg=BG, highlightthickness=0)
+        scrollbar = tk.Scrollbar(outer, orient="vertical", command=canvas.yview)
+        tab = tk.Frame(canvas, bg=BG)
+
+        tab.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+        canvas.create_window((0, 0), window=tab, anchor="nw", tags="frame")
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        # Make canvas frame stretch to full width
+        def on_canvas_resize(e):
+            canvas.itemconfig("frame", width=e.width)
+        canvas.bind("<Configure>", on_canvas_resize)
+
+        # Mouse wheel scrolling
+        def on_mousewheel(e):
+            canvas.yview_scroll(int(-1 * (e.delta / 120)), "units")
+        canvas.bind_all("<MouseWheel>", on_mousewheel)
+
+        scrollbar.pack(side="right", fill="y")
+        canvas.pack(side="left", fill="both", expand=True)
 
         # Profile
         card = self._card(tab)
@@ -248,8 +269,8 @@ class SurroundApp:
 
         self.device_combo = ttk.Combobox(dev_card, textvariable=self.device_var,
                                          values=device_names, state="readonly",
-                                         font=(FONT, 10))
-        self.device_combo.pack(fill="x", padx=20, pady=(0, 10))
+                                         width=55, font=(FONT, 10))
+        self.device_combo.pack(anchor="w", padx=20, pady=(0, 10))
         self.device_combo.bind("<<ComboboxSelected>>", self._on_device_change)
 
         hp_row = tk.Frame(dev_card, bg=BG_CARD)
