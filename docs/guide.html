@@ -298,14 +298,16 @@
 
                 <div class="guide-block" id="prerequisites">
                     <h3><span class="guide-step-badge">1</span> Prerequisites</h3>
-                    <p>Before installing Anomaly Surround, make sure you have:</p>
+                    <p>Before running Anomaly Surround, you need:</p>
                     <ul>
                         <li><strong>Windows 10 or 11</strong></li>
-                        <li><strong>Python 3.10 or newer</strong> &mdash; <a href="https://python.org/downloads" target="_blank">Download from python.org</a>. During install, check <strong>"Add Python to PATH"</strong>.</li>
                         <li><strong>Equalizer APO</strong> &mdash; <a href="https://sourceforge.net/projects/equalizerapo/" target="_blank">Download from SourceForge</a>. This is the free, open-source audio engine that handles all DSP processing.</li>
                     </ul>
                     <div class="guide-note">
                         <strong>Important:</strong> Without Equalizer APO, the app can run but cannot apply any audio processing. Make sure to install it first.
+                    </div>
+                    <div class="guide-tip">
+                        <strong>No Python needed!</strong> The standalone exe bundles everything. Just download and run.
                     </div>
                 </div>
 
@@ -324,41 +326,18 @@
                 </div>
 
                 <div class="guide-block" id="install">
-                    <h3><span class="guide-step-badge">3</span> Install Anomaly Surround</h3>
-                    <p>Download the app and install its dependencies:</p>
-                    <div class="code-block">
-                        <span class="comment"># Navigate to the app folder</span><br>
-                        <span class="command">cd</span> anomaly-surround<br><br>
-                        <span class="comment"># Run the setup script (installs Python dependencies)</span><br>
-                        <span class="command">setup.bat</span><br><br>
-                        <span class="comment"># Or install manually</span><br>
-                        <span class="command">pip install</span> <span class="flag">pycaw comtypes</span>
+                    <h3><span class="guide-step-badge">3</span> Download Anomaly Surround</h3>
+                    <p>Download the standalone exe from the <a href="https://github.com/anomaly-surround/anomaly-surround/releases/latest">releases page</a>. No installation needed &mdash; just save it anywhere and run it.</p>
+                    <div class="guide-tip">
+                        <strong>That's it!</strong> No Python, no dependencies, no setup scripts. Just the exe.
                     </div>
-                    <p>That's it for installation. The app is ready to use.</p>
                 </div>
 
                 <div class="guide-block" id="launch">
                     <h3><span class="guide-step-badge">4</span> Launch the App</h3>
-                    <p>The easiest way to start: <strong>double-click <code style="color:var(--green)">launch.vbs</code></strong> in the app folder. That's it &mdash; the app opens cleanly with no extra windows.</p>
+                    <p>Double-click <strong>Anomaly Surround.exe</strong>. The app opens with the full interface &mdash; no cmd window, no extra steps.</p>
                     <div class="guide-tip">
-                        <strong>That's all most users need!</strong> Just run launch.vbs and you're good to go. The options below are for advanced users.
-                    </div>
-                    <p style="margin-top:16px;margin-bottom:8px;font-weight:600;">Other ways to launch (optional):</p>
-                    <div class="usage-grid">
-                        <div class="usage-card">
-                            <h4>Background / Tray Mode</h4>
-                            <p>Runs silently in your system tray. Auto-switches profiles when you launch games.</p>
-                            <div class="code-block" style="margin-top:10px;">
-                                <span class="command">python</span> main.py <span class="flag">--tray</span>
-                            </div>
-                        </div>
-                        <div class="usage-card">
-                            <h4>CLI Mode</h4>
-                            <p>Command-line interface for quick adjustments.</p>
-                            <div class="code-block" style="margin-top:10px;">
-                                <span class="command">python</span> main.py <span class="flag">--cli</span> status
-                            </div>
-                        </div>
+                        <strong>That's all most users need!</strong> Just run the exe and you're good to go.
                     </div>
                 </div>
 
