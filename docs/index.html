@@ -1035,27 +1035,24 @@
             <!-- Launching the App -->
             <div class="guide-block reveal">
                 <h3><span class="guide-step-badge">4</span> Launch the App</h3>
-                <p>Anomaly Surround has three modes. Choose whichever fits your workflow:</p>
+                <p>The easiest way to start: <strong>double-click <code style="color:var(--green)">launch.bat</code></strong> in the app folder. That's it — the app opens with the full interface.</p>
 
+                <div class="guide-tip">
+                    <strong>That's all most users need!</strong> Just run launch.bat and you're good to go. The sections below are for advanced users who want other ways to run the app.
+                </div>
+
+                <p style="margin-top:16px;margin-bottom:8px;font-weight:600;">Other ways to launch (optional):</p>
                 <div class="usage-grid">
                     <div class="usage-card">
-                        <h4>GUI Mode (Recommended)</h4>
-                        <p>Full graphical interface with EQ sliders, surround controls, and game management.</p>
-                        <div class="code-block" style="margin-top:10px;">
-                            <span class="command">python</span> main.py
-                        </div>
-                        <p>Or just double-click <strong>launch.bat</strong>.</p>
-                    </div>
-                    <div class="usage-card">
                         <h4>Background / Tray Mode</h4>
-                        <p>Runs silently in the system tray. Monitors games and auto-switches profiles.</p>
+                        <p>Want it running silently in the background? It sits in your system tray and auto-switches profiles when you launch games.</p>
                         <div class="code-block" style="margin-top:10px;">
                             <span class="command">python</span> main.py <span class="flag">--tray</span>
                         </div>
                     </div>
                     <div class="usage-card">
                         <h4>CLI Mode</h4>
-                        <p>Command-line interface for scripting and quick adjustments.</p>
+                        <p>For advanced users who prefer the command line. Quick adjustments without opening the GUI.</p>
                         <div class="code-block" style="margin-top:10px;">
                             <span class="command">python</span> main.py <span class="flag">--cli</span> status
                         </div>
