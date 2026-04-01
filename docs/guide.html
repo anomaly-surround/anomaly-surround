@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anomaly Surround - Documentation</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #050810;
+            --bg-card: #0d1117;
+            --accent: #7c3aed;
+            --accent2: #a78bfa;
+            --blue: #60a5fa;
+            --green: #34d399;
+            --yellow: #f59e0b;
+            --text: #e2e8f0;
+            --text-dim: #64748b;
+            --text-mid: #94a3b8;
+            --border: #1e293b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(5, 8, 16, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(124, 58, 237, 0.1);
+        }
+
+        .nav-logo {
+            font-size: 1.4em;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent2), var(--blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-mid);
+            text-decoration: none;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--accent2); }
+
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 100px 20px 60px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .page-header h1 {
+            font-size: 2.5em;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .page-header p {
+            color: var(--text-mid);
+            font-size: 1.1em;
+        }
+
+        /* Sidebar TOC */
+        .docs-layout {
+            display: flex;
+            gap: 30px;
+        }
+
+        .docs-toc {
+            width: 200px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 80px;
+            align-self: flex-start;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+
+        .docs-toc a {
+            display: block;
+            padding: 6px 12px;
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.85em;
+            border-left: 2px solid var(--border);
+            transition: all 0.15s;
+        }
+
+        .docs-toc a:hover { color: var(--accent2); border-color: var(--accent2); }
+
+        .docs-content { flex: 1; min-width: 0; }
+
+        .guide-block {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 36px;
+            margin-bottom: 24px;
+        }
+
+        .guide-block h3 {
+            font-size: 1.2em;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .guide-step-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #6366f1);
+            color: white;
+            font-size: 0.85em;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .guide-block p, .guide-block li {
+            color: var(--text-mid);
+            line-height: 1.7;
+            font-size: 0.95em;
+        }
+
+        .guide-block ol, .guide-block ul {
+            margin: 12px 0;
+            padding-left: 20px;
+        }
+
+        .guide-block li { margin-bottom: 8px; }
+
+        .guide-block a { color: var(--accent2); text-decoration: none; font-weight: 600; }
+        .guide-block a:hover { text-decoration: underline; }
+
+        .code-block {
+            background: #0b0f1a;
+            border: 1px solid #1a2035;
+            border-radius: 10px;
+            padding: 16px 20px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #c4cad6;
+            margin: 12px 0;
+            overflow-x: auto;
+        }
+
+        .code-block .comment { color: #4b6a8f; }
+        .code-block .command { color: var(--green); }
+        .code-block .flag { color: var(--accent2); }
+
+        .guide-note {
+            background: rgba(245, 158, 11, 0.08);
+            border-left: 3px solid var(--yellow);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            margin: 16px 0;
+            font-size: 0.9em;
+            color: var(--yellow);
+        }
+
+        .guide-tip {
+            background: rgba(52, 211, 153, 0.08);
+            border-left: 3px solid var(--green);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            margin: 16px 0;
+            font-size: 0.9em;
+            color: var(--green);
+        }
+
+        .usage-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .usage-card {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(30, 41, 59, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .usage-card h4 { font-size: 1em; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+        .usage-card p { font-size: 0.85em; line-height: 1.6; }
+
+        .cli-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+        }
+
+        .cli-table th {
+            text-align: left;
+            padding: 10px 12px;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-dim);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .cli-table td {
+            padding: 10px 12px;
+            font-size: 0.9em;
+            border-bottom: 1px solid rgba(30, 41, 59, 0.5);
+        }
+
+        .cli-table td:first-child { font-family: 'Consolas', monospace; color: var(--green); white-space: nowrap; }
+        .cli-table td:last-child { color: var(--text-mid); }
+
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.85em;
+        }
+
+        @media (max-width: 768px) {
+            nav { padding: 12px 20px; }
+            .nav-links { display: none; }
+            .docs-layout { flex-direction: column; }
+            .docs-toc { width: 100%; position: static; display: flex; flex-wrap: wrap; gap: 4px; }
+            .docs-toc a { border-left: none; border-bottom: 2px solid var(--border); padding: 4px 10px; font-size: 0.8em; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="nav-logo">Anomaly Surround</a>
+        <ul class="nav-links">
+            <li><a href="index.html#features">Features</a></li>
+            <li><a href="index.html#download">Download</a></li>
+            <li><a href="guide.html" style="color:var(--accent2)">Docs</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Documentation</h1>
+            <p>Everything you need to install, configure, and use Anomaly Surround.</p>
+        </div>
+
+        <div class="docs-layout">
+            <div class="docs-toc">
+                <a href="#prerequisites">Prerequisites</a>
+                <a href="#configure-eqapo">Configure EQ APO</a>
+                <a href="#install">Install</a>
+                <a href="#launch">Launch</a>
+                <a href="#gui">Using the GUI</a>
+                <a href="#cli">CLI Reference</a>
+                <a href="#game-profiles">Game Profiles</a>
+                <a href="#autostart">Auto-Start</a>
+                <a href="#hrtf">In-Game HRTF</a>
+                <a href="#troubleshooting">Troubleshooting</a>
+            </div>
+
+            <div class="docs-content">
+
+                <div class="guide-block" id="prerequisites">
+                    <h3><span class="guide-step-badge">1</span> Prerequisites</h3>
+                    <p>Before installing Anomaly Surround, make sure you have:</p>
+                    <ul>
+                        <li><strong>Windows 10 or 11</strong></li>
+                        <li><strong>Python 3.10 or newer</strong> &mdash; <a href="https://python.org/downloads" target="_blank">Download from python.org</a>. During install, check <strong>"Add Python to PATH"</strong>.</li>
+                        <li><strong>Equalizer APO</strong> &mdash; <a href="https://sourceforge.net/projects/equalizerapo/" target="_blank">Download from SourceForge</a>. This is the free, open-source audio engine that handles all DSP processing.</li>
+                    </ul>
+                    <div class="guide-note">
+                        <strong>Important:</strong> Without Equalizer APO, the app can run but cannot apply any audio processing. Make sure to install it first.
+                    </div>
+                </div>
+
+                <div class="guide-block" id="configure-eqapo">
+                    <h3><span class="guide-step-badge">2</span> Configure Equalizer APO</h3>
+                    <p>After installing Equalizer APO:</p>
+                    <ol>
+                        <li>The <strong>Configurator</strong> will open automatically after installation.</li>
+                        <li>Find your headphones in the device list (e.g., <strong>HyperX Cloud Alpha S</strong>).</li>
+                        <li>Check the box next to your headphones to enable processing on that device.</li>
+                        <li>Click <strong>OK</strong> and <strong>restart your computer</strong>.</li>
+                    </ol>
+                    <div class="guide-tip">
+                        <strong>Tip:</strong> If you need to re-open the Configurator later, find it in Start Menu > Equalizer APO > Configurator.
+                    </div>
+                </div>
+
+                <div class="guide-block" id="install">
+                    <h3><span class="guide-step-badge">3</span> Install Anomaly Surround</h3>
+                    <p>Download the app and install its dependencies:</p>
+                    <div class="code-block">
+                        <span class="comment"># Navigate to the app folder</span><br>
+                        <span class="command">cd</span> anomaly-surround<br><br>
+                        <span class="comment"># Run the setup script (installs Python dependencies)</span><br>
+                        <span class="command">setup.bat</span><br><br>
+                        <span class="comment"># Or install manually</span><br>
+                        <span class="command">pip install</span> <span class="flag">pycaw comtypes</span>
+                    </div>
+                    <p>That's it for installation. The app is ready to use.</p>
+                </div>
+
+                <div class="guide-block" id="launch">
+                    <h3><span class="guide-step-badge">4</span> Launch the App</h3>
+                    <p>The easiest way to start: <strong>double-click <code style="color:var(--green)">launch.vbs</code></strong> in the app folder. That's it &mdash; the app opens cleanly with no extra windows.</p>
+                    <div class="guide-tip">
+                        <strong>That's all most users need!</strong> Just run launch.vbs and you're good to go. The options below are for advanced users.
+                    </div>
+                    <p style="margin-top:16px;margin-bottom:8px;font-weight:600;">Other ways to launch (optional):</p>
+                    <div class="usage-grid">
+                        <div class="usage-card">
+                            <h4>Background / Tray Mode</h4>
+                            <p>Runs silently in your system tray. Auto-switches profiles when you launch games.</p>
+                            <div class="code-block" style="margin-top:10px;">
+                                <span class="command">python</span> main.py <span class="flag">--tray</span>
+                            </div>
+                        </div>
+                        <div class="usage-card">
+                            <h4>CLI Mode</h4>
+                            <p>Command-line interface for quick adjustments.</p>
+                            <div class="code-block" style="margin-top:10px;">
+                                <span class="command">python</span> main.py <span class="flag">--cli</span> status
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="guide-block" id="gui">
+                    <h3><span class="guide-step-badge">5</span> Using the GUI</h3>
+                    <p>The GUI has five tabs:</p>
+                    <ul>
+                        <li><strong>Main</strong> &mdash; Select your active profile, toggle surround/HRTF/EQ on or off, and control master volume.</li>
+                        <li><strong>Equalizer</strong> &mdash; 10-band parametric EQ (31Hz to 16kHz). Load a preset or customize. Adjust preamp gain to prevent clipping.</li>
+                        <li><strong>Surround</strong> &mdash; Configure virtual 7.1 channel levels: Stereo Width, Center, LFE, Rear, Side, and Room Size.</li>
+                        <li><strong>Games</strong> &mdash; View and manage game-to-profile mappings (40+ built-in). Add custom mappings.</li>
+                        <li><strong>Settings</strong> &mdash; Auto-start, minimize-to-tray, game scan interval, and detected devices.</li>
+                    </ul>
+                    <div class="guide-tip">
+                        <strong>Tip:</strong> Use <strong>Save As...</strong> on the Main tab to save your configuration as a new profile.
+                    </div>
+                </div>
+
+                <div class="guide-block" id="cli">
+                    <h3><span class="guide-step-badge">6</span> CLI Commands Reference</h3>
+                    <p>Format: <code style="color:var(--green);">python main.py --cli &lt;command&gt;</code></p>
+                    <table class="cli-table">
+                        <thead><tr><th>Command</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td>status</td><td>Show current status, active profile, and detected devices</td></tr>
+                            <tr><td>profiles</td><td>List all available profiles</td></tr>
+                            <tr><td>apply &lt;name&gt;</td><td>Apply a profile (e.g., <code>apply fps</code>)</td></tr>
+                            <tr><td>eq</td><td>View current EQ band settings</td></tr>
+                            <tr><td>eq -b 3 -g 4.5</td><td>Set EQ band 3 to +4.5 dB</td></tr>
+                            <tr><td>surround on/off</td><td>Enable or disable virtual surround</td></tr>
+                            <tr><td>volume 75</td><td>Set master volume to 75%</td></tr>
+                            <tr><td>games list</td><td>Show all game-to-profile mappings</td></tr>
+                            <tr><td>games detect</td><td>Scan for currently running games</td></tr>
+                            <tr><td>games add game.exe fps</td><td>Map a game executable to a profile</td></tr>
+                            <tr><td>autostart on/off</td><td>Toggle Windows startup</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="guide-block" id="game-profiles">
+                    <h3><span class="guide-step-badge">7</span> Setting Up Per-Game Profiles</h3>
+                    <p>The app auto-detects 40+ games. To add your own:</p>
+                    <ol>
+                        <li><strong>Find the game's .exe name</strong> &mdash; Open Task Manager while the game is running, find the process name.</li>
+                        <li><strong>GUI:</strong> Go to the <strong>Games</strong> tab, type the exe name, select a profile, click <strong>Add</strong>.</li>
+                        <li><strong>CLI:</strong> Run <code style="color:var(--green);">python main.py --cli games add mygame.exe fps</code></li>
+                    </ol>
+                    <p>The app auto-switches when you launch the game and reverts when you close it.</p>
+                </div>
+
+                <div class="guide-block" id="autostart">
+                    <h3><span class="guide-step-badge">8</span> Running on Startup (Optional)</h3>
+                    <ul>
+                        <li><strong>GUI:</strong> Settings tab &rarr; check <strong>"Start with Windows"</strong></li>
+                        <li><strong>CLI:</strong> <code style="color:var(--green);">python main.py --cli autostart on</code></li>
+                    </ul>
+                    <p>This launches the app in tray mode when Windows starts.</p>
+                </div>
+
+                <div class="guide-block" id="hrtf">
+                    <h3><span class="guide-step-badge">!</span> Using With In-Game Spatial Audio</h3>
+                    <p>Some games have built-in HRTF (Valorant, CS2, Overwatch). Using both the game's HRTF and Anomaly Surround's HRTF causes <strong>double-processing</strong> which sounds worse.</p>
+                    <div class="guide-note">
+                        <strong>Rule of thumb:</strong> If a game has its own spatial audio, turn OFF Surround and HRTF in Anomaly Surround. Just use the EQ.
+                    </div>
+                    <div class="guide-tip">
+                        <strong>Tip:</strong> Create two profiles:
+                        <br>&bull; <strong>"FPS EQ Only"</strong> &mdash; for games with built-in spatial audio
+                        <br>&bull; <strong>"FPS Full"</strong> &mdash; for games without spatial audio
+                        <br>Map each game to the right one &mdash; the app auto-switches.
+                    </div>
+                </div>
+
+                <div class="guide-block" id="troubleshooting">
+                    <h3><span class="guide-step-badge">?</span> Troubleshooting</h3>
+                    <ul>
+                        <li><strong>"Equalizer APO not installed"</strong> &mdash; Install Equalizer APO and enable it for your headphones in the Configurator. Restart your PC.</li>
+                        <li><strong>"Permission denied"</strong> &mdash; Run the app as Administrator.</li>
+                        <li><strong>No sound difference</strong> &mdash; Open Equalizer APO's Configuration Editor and verify config.txt was updated.</li>
+                        <li><strong>Game not detected</strong> &mdash; Check the exact .exe name in Task Manager and add it manually.</li>
+                        <li><strong>Audio crackling</strong> &mdash; Lower the preamp gain in the Equalizer tab.</li>
+                        <li><strong>Audio mutes when opening a game</strong> &mdash; Enable "Auto-apply EQ when game detected" in the Games tab, or click Apply to force refresh.</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p><a href="index.html" style="color:var(--accent2);text-decoration:none">&larr; Back to Home</a></p>
+        <p style="margin-top:12px;">Anomaly Surround &mdash; Built for gamers who hear the difference.</p>
+    </footer>
+
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                const target = document.querySelector(link.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -760,8 +760,8 @@
         <div class="nav-logo">Anomaly Surround</div>
         <ul class="nav-links">
             <li><a href="#features">Features</a></li>
-            <li><a href="#how-it-works">How It Works</a></li>
-            <li><a href="#install-guide">Install Guide</a></li>
+            <li><a href="#install-guide">Get Started</a></li>
+            <li><a href="guide.html">Docs</a></li>
             <li><a href="#faq">FAQ</a></li>
             <li><a href="#donate" style="color:#f59e0b !important;font-weight:600 !important">Donate</a></li>
             <li><a href="#download" class="nav-cta">Download</a></li>
@@ -919,32 +919,6 @@
         </div>
     </section>
 
-    <!-- How It Works -->
-    <section class="section" id="how-it-works">
-        <div class="section-header reveal">
-            <h2>Up and Running in 3 Steps</h2>
-            <p>No complex setup. No subscriptions. Just better audio.</p>
-        </div>
-
-        <div class="steps reveal">
-            <div class="step">
-                <div class="step-number">1</div>
-                <h3>Install Equalizer APO</h3>
-                <p>Free, open-source audio driver. Install it and select your headphones in the configurator.</p>
-            </div>
-            <div class="step">
-                <div class="step-number">2</div>
-                <h3>Launch Anomaly Surround</h3>
-                <p>Run the app, pick a preset (FPS, RPG, Music) or customize your own profile from scratch.</p>
-            </div>
-            <div class="step">
-                <div class="step-number">3</div>
-                <h3>Game On</h3>
-                <p>That's it. The app detects your games and auto-switches profiles. Just play.</p>
-            </div>
-        </div>
-    </section>
-
     <!-- Presets -->
     <section class="section">
         <div class="section-header reveal">
@@ -979,197 +953,36 @@
         </div>
     </section>
 
-    <!-- Installation & Usage Guide -->
+    <!-- Quick Start + Docs Link -->
     <section class="section" id="install-guide">
         <div class="section-header reveal">
-            <h2>Installation & Usage Guide</h2>
-            <p>Complete step-by-step instructions to get Anomaly Surround running on your system.</p>
+            <h2>Get Started in 3 Steps</h2>
+            <p>Download, install, and you're ready to go.</p>
         </div>
 
-        <div class="guide-section">
-
-            <!-- Prerequisites -->
-            <div class="guide-block reveal">
-                <h3><span class="guide-step-badge">1</span> Prerequisites</h3>
-                <p>Before installing Anomaly Surround, make sure you have:</p>
-                <ul>
-                    <li><strong>Windows 10 or 11</strong></li>
-                    <li><strong>Python 3.10 or newer</strong> &mdash; <a href="https://python.org/downloads" target="_blank">Download from python.org</a>. During install, check <strong>"Add Python to PATH"</strong>.</li>
-                    <li><strong>Equalizer APO</strong> &mdash; <a href="https://sourceforge.net/projects/equalizerapo/" target="_blank">Download from SourceForge</a>. This is the free, open-source audio engine that handles all DSP processing.</li>
-                </ul>
-                <div class="guide-note">
-                    <strong>Important:</strong> Without Equalizer APO, the app can run but cannot apply any audio processing. Make sure to install it first.
-                </div>
+        <div class="steps reveal">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Install Prerequisites</h3>
+                <p>Install <a href="https://python.org/downloads" target="_blank" style="color:var(--accent2)">Python 3.10+</a> and <a href="https://sourceforge.net/projects/equalizerapo/" target="_blank" style="color:var(--accent2)">Equalizer APO</a>. Both are free.</p>
             </div>
-
-            <!-- Install Equalizer APO -->
-            <div class="guide-block reveal">
-                <h3><span class="guide-step-badge">2</span> Configure Equalizer APO</h3>
-                <p>After installing Equalizer APO:</p>
-                <ol>
-                    <li>The <strong>Configurator</strong> will open automatically after installation.</li>
-                    <li>Find your headphones in the device list (e.g., <strong>HyperX Cloud Alpha S</strong>).</li>
-                    <li>Check the box next to your headphones to enable processing on that device.</li>
-                    <li>Click <strong>OK</strong> and <strong>restart your computer</strong>.</li>
-                </ol>
-                <div class="guide-tip">
-                    <strong>Tip:</strong> If you need to re-open the Configurator later, find it in Start Menu > Equalizer APO > Configurator.
-                </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Download & Setup</h3>
+                <p>Download Anomaly Surround, extract it, and run <strong>setup.bat</strong> to install dependencies.</p>
             </div>
-
-            <!-- Install Anomaly Surround -->
-            <div class="guide-block reveal">
-                <h3><span class="guide-step-badge">3</span> Install Anomaly Surround</h3>
-                <p>Download the app and install its dependencies:</p>
-                <div class="code-block">
-                    <span class="comment"># Navigate to the app folder</span><br>
-                    <span class="command">cd</span> anomaly-surround<br><br>
-                    <span class="comment"># Run the setup script (installs Python dependencies)</span><br>
-                    <span class="command">setup.bat</span><br><br>
-                    <span class="comment"># Or install manually</span><br>
-                    <span class="command">pip install</span> <span class="flag">pycaw comtypes</span>
-                </div>
-                <p>That's it for installation. The app is ready to use.</p>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Launch & Play</h3>
+                <p>Double-click <strong>launch.vbs</strong>. Pick a preset and start gaming. The app handles the rest.</p>
             </div>
+        </div>
 
-            <!-- Launching the App -->
-            <div class="guide-block reveal">
-                <h3><span class="guide-step-badge">4</span> Launch the App</h3>
-                <p>The easiest way to start: <strong>double-click <code style="color:var(--green)">launch.vbs</code></strong> in the app folder. That's it — the app opens cleanly with no extra windows.</p>
-
-                <div class="guide-tip">
-                    <strong>That's all most users need!</strong> Just run launch.vbs and you're good to go. The sections below are for advanced users who want other ways to run the app.
-                </div>
-
-                <p style="margin-top:16px;margin-bottom:8px;font-weight:600;">Other ways to launch (optional):</p>
-                <div class="usage-grid">
-                    <div class="usage-card">
-                        <h4>Background / Tray Mode</h4>
-                        <p>Want it running silently in the background? It sits in your system tray and auto-switches profiles when you launch games.</p>
-                        <div class="code-block" style="margin-top:10px;">
-                            <span class="command">python</span> main.py <span class="flag">--tray</span>
-                        </div>
-                    </div>
-                    <div class="usage-card">
-                        <h4>CLI Mode</h4>
-                        <p>For advanced users who prefer the command line. Quick adjustments without opening the GUI.</p>
-                        <div class="code-block" style="margin-top:10px;">
-                            <span class="command">python</span> main.py <span class="flag">--cli</span> status
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Using the GUI -->
-            <div class="guide-block reveal">
-                <h3><span class="guide-step-badge">5</span> Using the GUI</h3>
-                <p>The GUI has five tabs:</p>
-
-                <ul>
-                    <li><strong>Main</strong> &mdash; Select your active profile, toggle surround/HRTF/EQ on or off, and control master volume. You'll also see the status of Equalizer APO and the game monitor here.</li>
-                    <li><strong>Equalizer</strong> &mdash; 10-band parametric EQ with vertical sliders (31Hz to 16kHz). Load a preset (FPS, RPG, Music) or drag the sliders to customize. Adjust preamp gain to prevent clipping. Click <strong>Apply EQ</strong> when done.</li>
-                    <li><strong>Surround</strong> &mdash; Configure virtual 7.1 channel levels individually: Stereo Width, Center, LFE (sub-bass), Rear, Side channels, and Room Size. Toggle Windows Sonic spatial audio on or off.</li>
-                    <li><strong>Games</strong> &mdash; View all game-to-profile mappings (40+ built-in). Add your own custom mappings by entering the game's .exe filename and selecting a profile. The app auto-detects running games and switches profiles.</li>
-                    <li><strong>Settings</strong> &mdash; Toggle auto-start with Windows, minimize-to-tray behavior, game scan interval, and view detected audio devices.</li>
-                </ul>
-
-                <div class="guide-tip">
-                    <strong>Tip:</strong> Use <strong>Save As...</strong> on the Main tab to save your custom configuration as a new profile you can switch to anytime.
-                </div>
-            </div>
-
-            <!-- CLI Reference -->
-            <div class="guide-block reveal">
-                <h3><span class="guide-step-badge">6</span> CLI Commands Reference</h3>
-                <p>All CLI commands use the format: <code style="color:var(--green);">python main.py --cli &lt;command&gt;</code></p>
-
-                <table class="cli-table">
-                    <thead>
-                        <tr><th>Command</th><th>Description</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>status</td><td>Show current status, active profile, and detected devices</td></tr>
-                        <tr><td>profiles</td><td>List all available profiles (built-in and custom)</td></tr>
-                        <tr><td>apply &lt;name&gt;</td><td>Apply a profile (e.g., <code>apply fps</code>)</td></tr>
-                        <tr><td>eq</td><td>View current EQ band settings</td></tr>
-                        <tr><td>eq -b 3 -g 4.5</td><td>Set EQ band 3 to +4.5 dB</td></tr>
-                        <tr><td>surround on/off</td><td>Enable or disable virtual surround</td></tr>
-                        <tr><td>volume 75</td><td>Set master volume to 75%</td></tr>
-                        <tr><td>games list</td><td>Show all game-to-profile mappings</td></tr>
-                        <tr><td>games detect</td><td>Scan for currently running games</td></tr>
-                        <tr><td>games add game.exe fps</td><td>Map a game executable to a profile</td></tr>
-                        <tr><td>autostart on/off</td><td>Toggle Windows startup</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Per-Game Profiles -->
-            <div class="guide-block reveal">
-                <h3><span class="guide-step-badge">7</span> Setting Up Per-Game Profiles</h3>
-                <p>Anomaly Surround automatically detects 40+ games and switches to the best profile. Here's how to add your own:</p>
-
-                <ol>
-                    <li><strong>Find the game's .exe name</strong> &mdash; Open Task Manager while the game is running, find the process name (e.g., <code>mygame.exe</code>).</li>
-                    <li><strong>In the GUI:</strong> Go to the <strong>Games</strong> tab, type the exe name, select a profile, and click <strong>Add</strong>.</li>
-                    <li><strong>In the CLI:</strong> Run <code style="color:var(--green);">python main.py --cli games add mygame.exe fps</code></li>
-                </ol>
-
-                <p>When the game launches, the app detects it and switches profiles automatically. When you close the game, it reverts to your default profile.</p>
-
-                <div class="guide-note">
-                    <strong>Note:</strong> The game monitor scans for running processes every 5 seconds (configurable in Settings). This uses minimal CPU resources.
-                </div>
-            </div>
-
-            <!-- Auto-Start -->
-            <div class="guide-block reveal">
-                <h3><span class="guide-step-badge">8</span> Running on Startup (Optional)</h3>
-                <p>To have Anomaly Surround start automatically with Windows and run in the background:</p>
-
-                <ul>
-                    <li><strong>GUI:</strong> Go to <strong>Settings</strong> tab and check <strong>"Start with Windows"</strong>.</li>
-                    <li><strong>CLI:</strong> Run <code style="color:var(--green);">python main.py --cli autostart on</code></li>
-                </ul>
-
-                <p>This creates a startup entry that launches the app in tray/background mode. To disable it later, uncheck the option or run <code style="color:var(--green);">autostart off</code>.</p>
-            </div>
-
-            <!-- In-Game HRTF -->
-            <div class="guide-block reveal">
-                <h3><span class="guide-step-badge">!</span> Using With In-Game HRTF / Spatial Audio</h3>
-                <p>Many games have their own built-in HRTF or spatial audio (e.g., Valorant, CS2, Overwatch). Running both the game's HRTF and Anomaly Surround's HRTF at the same time means <strong>double-processing</strong>, which can make positional audio sound worse, not better.</p>
-
-                <div class="guide-note">
-                    <strong>Important:</strong> If a game already has good spatial audio, disable Surround and HRTF in Anomaly Surround for that game. Only use the EQ.
-                </div>
-
-                <p><strong>Best practice:</strong></p>
-                <ul>
-                    <li><strong>Game has built-in HRTF</strong> (Valorant, CS2, Overwatch, Apex Legends) &mdash; Turn OFF Surround and HRTF in Anomaly Surround. Just use the EQ to boost footstep frequencies and tweak the sound to your preference.</li>
-                    <li><strong>Game has no spatial audio</strong> &mdash; Turn ON Surround and HRTF in Anomaly Surround. The app will handle directional audio processing for you.</li>
-                </ul>
-
-                <div class="guide-tip">
-                    <strong>Tip:</strong> Create two profiles to handle this easily:
-                    <br>&bull; <strong>"FPS EQ Only"</strong> &mdash; Surround OFF, HRTF OFF, just EQ tuned for footsteps. Map this to games with built-in spatial audio.
-                    <br>&bull; <strong>"FPS Full"</strong> &mdash; Surround ON, HRTF ON. Map this to games without spatial audio.
-                    <br>Then assign each game to the right profile in the Games tab &mdash; the app auto-switches for you.
-                </div>
-            </div>
-
-            <!-- Troubleshooting -->
-            <div class="guide-block reveal">
-                <h3><span class="guide-step-badge">?</span> Troubleshooting</h3>
-                <ul>
-                    <li><strong>"Equalizer APO not installed"</strong> &mdash; Make sure Equalizer APO is installed and you've enabled it for your headphones in the Configurator. Restart your PC after setup.</li>
-                    <li><strong>"Permission denied"</strong> &mdash; Run the app as Administrator. Equalizer APO's config files are in Program Files, which requires elevated permissions to write.</li>
-                    <li><strong>No sound difference after applying</strong> &mdash; Open Equalizer APO's own "Configuration Editor" and verify that the config.txt file has been updated. Make sure no other audio software is overriding it.</li>
-                    <li><strong>Game not auto-detected</strong> &mdash; Check the exact .exe name in Task Manager and add it manually via the Games tab or CLI.</li>
-                    <li><strong>Audio crackling or distortion</strong> &mdash; Lower the preamp gain in the Equalizer tab. High EQ boosts combined with loud audio can cause clipping.</li>
-                    <li><strong>Audio mutes when opening or closing a game</strong> &mdash; Some games take exclusive control of the audio device, which interrupts Equalizer APO. Make sure <strong>"Auto-apply EQ when game detected"</strong> is checked in the Games tab. This lets the app automatically re-apply your audio settings after the game finishes initializing. If audio is still muted, click <strong>"Apply"</strong> on the Equalizer or Surround tab to force a config refresh.</li>
-                </ul>
-            </div>
-
+        <div class="reveal" style="text-align:center;margin-top:40px">
+            <a href="guide.html" style="display:inline-flex;align-items:center;gap:8px;padding:14px 32px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;color:var(--accent2);font-size:1em;font-weight:600;text-decoration:none;transition:all 0.2s">
+                <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                Full Documentation &mdash; Install Guide, CLI Reference, Troubleshooting
+            </a>
         </div>
     </section>
 
@@ -1304,7 +1117,7 @@
         <p>Built for gamers who hear the difference.</p>
         <p style="margin-top:12px;">
             <a href="#features" style="color:var(--text-dim);text-decoration:none;margin:0 10px">Features</a>
-            <a href="#install-guide" style="color:var(--text-dim);text-decoration:none;margin:0 10px">Install Guide</a>
+            <a href="guide.html" style="color:var(--text-dim);text-decoration:none;margin:0 10px">Docs</a>
             <a href="#faq" style="color:var(--text-dim);text-decoration:none;margin:0 10px">FAQ</a>
             <a href="#download" style="color:var(--text-dim);text-decoration:none;margin:0 10px">Download</a>
         </p>
