@@ -170,8 +170,20 @@ def save_settings(settings):
         json.dump(settings, f, indent=2)
 
 
+def _validate_name(name):
+    """Validate profile/game name — alphanumeric, underscore, dash, space only."""
+    import re
+    if not name or not re.match(r'^[a-zA-Z0-9_\- ]+$', name):
+        raise ValueError(f"Invalid name: {name}")
+    return name.strip()
+
+
 def load_profile(name):
+    name = _validate_name(name)
     path = os.path.join(PROFILES_DIR, f"{name}.json")
+    # Ensure resolved path is within PROFILES_DIR
+    if not os.path.realpath(path).startswith(os.path.realpath(PROFILES_DIR)):
+        raise ValueError(f"Invalid profile path: {name}")
     if os.path.exists(path):
         with open(path, "r") as f:
             return json.load(f)
@@ -181,8 +193,11 @@ def load_profile(name):
 
 
 def save_profile(name, profile):
+    name = _validate_name(name)
     ensure_dirs()
     path = os.path.join(PROFILES_DIR, f"{name}.json")
+    if not os.path.realpath(path).startswith(os.path.realpath(PROFILES_DIR)):
+        raise ValueError(f"Invalid profile path: {name}")
     with open(path, "w") as f:
         json.dump(profile, f, indent=2)
 

@@ -191,7 +191,7 @@ def configure_windows_spatial_audio(mode="windows_sonic"):
                 'Set-AudioDevice -SpatialAudioFormat WindowsSonic'
             )
             # Fallback: use the Settings URI
-            os.system('start ms-settings:sound')
+            subprocess.Popen(['cmd', '/c', 'start', 'ms-settings:sound'], creationflags=subprocess.CREATE_NO_WINDOW)
             return True, "Opened Windows Sound Settings - enable Windows Sonic for Headphones on your device"
         elif mode == "off":
             return True, "Spatial audio disabled"
